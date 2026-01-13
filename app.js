@@ -1,214 +1,454 @@
-// Jeu principal — logique légère, sauvegarde locale et navigation
-let currentGame = null;
-let currentIndex = 0;
-let score = 0;
+// app.js — logique du jeu, TTS FR, sons (WebAudio), animations, sauvegarde locale
+(() => {
+  // ----- Utilitaires -----
+  const $ = sel => document.querySelector(sel);
+  const $$ = sel => Array.from(document.querySelectorAll(sel));
+  const save = (k,v) => localStorage.setItem(k, JSON.stringify(v));
+  const load = k => {
+    try { return JSON.parse(localStorage.getItem(k)); }
+    catch(e){ return null; }
+  };
 
-const mainMenu = document.getElementById('main-menu');
-const gameZone = document.getElementById('game-zone');
-const gameContent = document.getElementById('game-content');
-const backButton = document.getElementById('back-button');
-const scoreDisplay = document.getElementById('score-display');
-
-const SAVE_KEY = 'labo_ortho_claude_v1';
-
-function init(){
-  // cartes
-  document.getElementById('game1-card').addEventListener('click', ()=>startGame('game1'));
-  document.getElementById('game2-card').addEventListener('click', ()=>startGame('game2'));
-  document.getElementById('game3-card').addEventListener('click', ()=>startGame('game3'));
-  document.getElementById('game4-card').addEventListener('click', ()=>startGame('game4'));
-
-  backButton.addEventListener('click', backToMenu);
-
-  // acces clavier
-  const cards = document.querySelectorAll('.game-card');
-  cards.forEach(c => {
-    c.addEventListener('keydown', (e) => {
-      if(e.key === 'Enter' || e.key === ' ') c.click();
-    });
-  });
-
-  loadProgress();
-  renderScore();
-}
-
-function loadProgress(){
-  try{
-    const raw = localStorage.getItem(SAVE_KEY);
-    if(raw){
-      const obj = JSON.parse(raw);
-      score = obj.score || 0;
-    } else score = 0;
-  }catch(e){
-    score = 0;
-  }
-}
-
-function saveProgress(){
-  localStorage.setItem(SAVE_KEY, JSON.stringify({ score }));
-}
-
-function renderScore(){
-  scoreDisplay.textContent = `Score total : ${score}`;
-}
-
-// navigation
-function backToMenu(){
-  currentGame = null;
-  currentIndex = 0;
-  gameContent.innerHTML = '';
-  mainMenu.classList.remove('hidden');
-  gameZone.classList.add('hidden');
-  renderScore();
-}
-
-function startGame(gameId){
-  currentGame = gameId;
-  currentIndex = 0;
-  mainMenu.classList.add('hidden');
-  gameZone.classList.remove('hidden');
-  gameContent.innerHTML = '';
-  renderScore();
-  showQuestion();
-}
-
-function showQuestion(){
-  const data = gameData[currentGame];
-  if(!data || currentIndex >= data.length){
-    gameContent.innerHTML = `<p>Bravo ${playerName} — défi terminé !</p>
-                             <p>Score pour ce défi : ${score}</p>
-                             <button id="end-ok" class="btn btn-success">Retour au menu</button>`;
-    document.getElementById('end-ok').addEventListener('click', backToMenu);
-    saveProgress();
-    return;
+  function normalize(s){
+    return s==null ? "" : s.toString().toLowerCase().normalize('NFD')
+      .replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9\s]/g,"").trim();
   }
 
-  switch(currentGame){
-    case 'game1': renderGame1(data[currentIndex]); break;
-    case 'game2': renderGame2(data[currentIndex]); break;
-    case 'game3': renderGame3(data[currentIndex]); break;
-    case 'game4': renderGame4(data[currentIndex]); break;
-  }
-}
-
-/* --- Game 1: texte à trous --- */
-function renderGame1(q){
-  gameContent.innerHTML = `
-    <p class="question-text">${q.text.replace('___','_____')}</p>
-    <input id="g1-input" type="text" aria-label="Réponse" />
-    <div style="margin-top:12px">
-      <button id="g1-submit" class="btn btn-primary">Valider</button>
-    </div>
-    <div id="g1-feedback"></div>
-  `;
-  const input = document.getElementById('g1-input');
-  const btn = document.getElementById('g1-submit');
-  const fb = document.getElementById('g1-feedback');
-
-  input.focus();
-  btn.addEventListener('click', ()=>{
-    const val = input.value.trim();
-    if(!val) return;
-    if(val.toLowerCase() === q.answer.toLowerCase()){
-      fb.textContent = 'Bonne réponse 🎉';
-      fb.className = 'feedback correct';
-      score++;
-    } else {
-      fb.textContent = `Mauvaise réponse — ${q.answer}`;
-      fb.className = 'feedback wrong';
+  function levenshtein(a,b){
+    if(!a||!b) return (a||"").length + (b||"").length;
+    const m=a.length,n=b.length;
+    const dp=Array.from({length:m+1},()=>Array(n+1).fill(0));
+    for(let i=0;i<=m;i++) dp[i][0]=i;
+    for(let j=0;j<=n;j++) dp[0][j]=j;
+    for(let i=1;i<=m;i++){
+      for(let j=1;j<=n;j++){
+        const cost = a[i-1]===b[j-1]?0:1;
+        dp[i][j]=Math.min(dp[i-1][j]+1, dp[i][j-1]+1, dp[i-1][j-1]+cost);
+      }
     }
-    saveProgress(); renderScore();
-    btn.disabled = true; input.disabled = true;
-    setTimeout(()=>{ currentIndex++; showQuestion(); }, 1200);
-  });
-}
-
-/* --- Game 2: reformulation (choix) --- */
-function renderGame2(q){
-  gameContent.innerHTML = `
-    <p class="question-text">Reformule : <em>"${q.phrase}"</em></p>
-    <div class="options" id="g2-options"></div>
-    <div id="g2-feedback"></div>
-  `;
-  const options = document.getElementById('g2-options');
-  const fb = document.getElementById('g2-feedback');
-
-  // préparer choix : prendre la 1ère reformulation comme "bonne"
-  const correct = q.reformulations && q.reformulations[0] ? q.reformulations[0] : q.phrase;
-  const fake = q.reformulations && q.reformulations[1] ? q.reformulations[1] : q.phrase + ' (autre)';
-  let choices = shuffle([correct, fake]);
-
-  choices.forEach(ch => {
-    const b = document.createElement('button');
-    b.className = 'btn btn-primary';
-    b.style.minWidth = '48%';
-    b.textContent = ch;
-    b.addEventListener('click', ()=>{
-      if(ch === correct){
-        fb.textContent = "Bonne reformulation 🎉"; fb.className='feedback correct'; score++;
-      } else { fb.textContent = "Ce n'est pas la meilleure reformulation."; fb.className='feedback wrong'; }
-      disableOptions(); saveProgress(); renderScore();
-      setTimeout(()=>{ currentIndex++; showQuestion(); }, 1200);
-    });
-    options.appendChild(b);
-  });
-
-  function disableOptions(){ options.querySelectorAll('button').forEach(x=>x.disabled=true); }
-}
-
-/* --- Game 3: mémoire de phrase --- */
-function renderGame3(phrase){
-  gameContent.innerHTML = `
-    <p class="question-text">Lis et mémorise :</p>
-    <blockquote style="font-size:1.15rem; font-style:italic;">"${phrase}"</blockquote>
-    <button id="g3-ready" class="btn btn-primary">J'ai mémorisé, je réponds</button>
-    <div id="g3-area" class="hidden">
-      <textarea id="g3-answer" rows="3" style="width:100%; margin-top:10px"></textarea>
-      <div style="margin-top:10px"><button id="g3-submit" class="btn btn-primary">Valider</button></div>
-      <div id="g3-feedback"></div>
-    </div>
-  `;
-  document.getElementById('g3-ready').addEventListener('click', ()=>{
-    document.getElementById('g3-ready').classList.add('hidden');
-    document.getElementById('g3-area').classList.remove('hidden');
-    document.getElementById('g3-answer').focus();
-  });
-
-  document.getElementById('g3-submit').addEventListener('click', ()=>{
-    const user = document.getElementById('g3-answer').value.trim().toLowerCase();
-    const correct = phrase.trim().toLowerCase();
-    const fb = document.getElementById('g3-feedback');
-    if(!user) return;
-    if(user === correct){ fb.textContent = 'Exactement — bravo ! 🎉'; fb.className='feedback correct'; score++; }
-    else { fb.textContent = `Presque. Phrase attendue : "${phrase}"`; fb.className='feedback wrong'; }
-    saveProgress(); renderScore();
-    setTimeout(()=>{ currentIndex++; showQuestion(); }, 1500);
-  });
-}
-
-/* --- Game 4: articulation (lecture) --- */
-function renderGame4(phrase){
-  gameContent.innerHTML = `
-    <p class="question-text">Lis vite cette phrase à voix haute :</p>
-    <blockquote style="font-size:1.15rem; font-style:italic;">"${phrase}"</blockquote>
-    <div style="margin-top:12px">
-      <button id="g4-next" class="btn btn-primary">Phrase suivante (j'ai lu)</button>
-    </div>
-  `;
-  document.getElementById('g4-next').addEventListener('click', ()=>{
-    score++; saveProgress(); renderScore();
-    currentIndex++; showQuestion();
-  });
-}
-
-/* utilitaire shuffle */
-function shuffle(arr){
-  const a = arr.slice();
-  for(let i=a.length-1;i>0;i--){
-    const j = Math.floor(Math.random()*(i+1));
-    [a[i], a[j]] = [a[j], a[i]];
+    return dp[m][n];
   }
-  return a;
-}
 
-init();
+  function showFeedback(text, type='success'){
+    const box = $('#feedback');
+    box.innerHTML = `<div class="feedback ${type}">${text}</div>`;
+    setTimeout(()=> {
+      if (box.firstChild) box.firstChild.classList.add(type==='success' ? 'correct' : 'incorrect');
+      setTimeout(()=> box.innerHTML = '', 1300);
+    }, 50);
+  }
+
+  // ----- WebAudio setup for ambient and SFX -----
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  const audioCtx = AudioCtx ? new AudioCtx() : null;
+  const audioNodes = { masterGain: null, ambientGain: null, sfxGain: null, ambientOscs: [] };
+
+  if(audioCtx){
+    audioNodes.masterGain = audioCtx.createGain(); audioNodes.masterGain.gain.value = 0.9;
+    audioNodes.ambientGain = audioCtx.createGain(); audioNodes.ambientGain.gain.value = 0.25;
+    audioNodes.sfxGain = audioCtx.createGain(); audioNodes.sfxGain.gain.value = 0.6;
+    audioNodes.ambientGain.connect(audioNodes.masterGain);
+    audioNodes.sfxGain.connect(audioNodes.masterGain);
+    audioNodes.masterGain.connect(audioCtx.destination);
+  }
+
+  // Ambient engine (simple layered oscillators + slow LFO)
+  let ambientRunning = false;
+  let ambientLFO = null;
+  function startAmbient(){
+    if(!audioCtx || ambientRunning) return;
+    // create two slow oscillators with different timbres
+    const o1 = audioCtx.createOscillator(); o1.type='sine'; o1.frequency.value = 80;
+    const o2 = audioCtx.createOscillator(); o2.type='triangle'; o2.frequency.value = 120;
+    const g1 = audioCtx.createGain(); g1.gain.value = 0.09;
+    const g2 = audioCtx.createGain(); g2.gain.value = 0.06;
+    const filter = audioCtx.createBiquadFilter(); filter.type='lowpass'; filter.frequency.value = 900;
+    o1.connect(g1); g1.connect(filter);
+    o2.connect(g2); g2.connect(filter);
+    filter.connect(audioNodes.ambientGain);
+    // LFO to modulate filter frequency gently
+    ambientLFO = audioCtx.createOscillator();
+    const lfoGain = audioCtx.createGain(); lfoGain.gain.value = 200;
+    ambientLFO.frequency.value = 0.05;
+    ambientLFO.connect(lfoGain);
+    lfoGain.connect(filter.frequency);
+    o1.start(); o2.start(); ambientLFO.start();
+    audioNodes.ambientOscs = [o1,o2,ambientLFO, g1, g2, filter];
+    ambientRunning = true;
+  }
+
+  function stopAmbient(){
+    if(!audioCtx || !ambientRunning) return;
+    const nodes = audioNodes.ambientOscs || [];
+    nodes.forEach(n=>{
+      try{
+        if(n.stop) n.stop();
+        if(n.disconnect) n.disconnect();
+      }catch(e){}
+    });
+    audioNodes.ambientOscs = [];
+    ambientRunning = false;
+  }
+
+  // SFX: success and fail using short oscillator envelopes
+  function playSuccess(){
+    if(!audioCtx) return;
+    const o = audioCtx.createOscillator(); o.type='sine'; o.frequency.value=660;
+    const g = audioCtx.createGain(); g.gain.value = 0.0001;
+    o.connect(g); g.connect(audioNodes.sfxGain);
+    const now = audioCtx.currentTime;
+    // simple rising "ding"
+    g.gain.cancelScheduledValues(now);
+    g.gain.setValueAtTime(0.0001, now);
+    g.gain.exponentialRampToValueAtTime(0.6, now+0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, now+0.5);
+    o.frequency.setValueAtTime(660, now);
+    o.frequency.exponentialRampToValueAtTime(1200, now+0.18);
+    o.start(now); o.stop(now+0.55);
+  }
+
+  function playFail(){
+    if(!audioCtx) return;
+    const o = audioCtx.createOscillator(); o.type='square'; o.frequency.value=160;
+    const g = audioCtx.createGain(); g.gain.value = 0.0001;
+    o.connect(g); g.connect(audioNodes.sfxGain);
+    const now = audioCtx.currentTime;
+    g.gain.setValueAtTime(0.0001, now);
+    g.gain.exponentialRampToValueAtTime(0.5, now+0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, now+0.28);
+    o.frequency.setValueAtTime(220, now);
+    o.frequency.exponentialRampToValueAtTime(110, now+0.2);
+    o.start(now); o.stop(now+0.32);
+  }
+
+  // ----- Settings and speech synthesis -----
+  const DEFAULTS = {
+    autoRead: true,
+    sfxVolume: 0.6,
+    ambientVolume: 0.25,
+    ambientOn: true,
+    voiceURI: null
+  };
+  const settings = Object.assign({}, DEFAULTS, load('labo_settings') || {});
+  if(audioCtx){
+    audioNodes.sfxGain.gain.value = settings.sfxVolume ?? DEFAULTS.sfxVolume;
+    audioNodes.ambientGain.gain.value = settings.ambientVolume ?? DEFAULTS.ambientVolume;
+  }
+  if(settings.ambientOn) {
+    // wait for a user gesture to start audio in some browsers
+    document.addEventListener('click', function userStartedOnce(){
+      startAmbient();
+      document.removeEventListener('click', userStartedOnce);
+    });
+  }
+
+  const synth = window.speechSynthesis;
+  let voices = [];
+  function refreshVoices(){
+    voices = synth.getVoices().filter(v=>v.lang && v.lang.startsWith('fr'));
+    const sel = $('#voice-select');
+    if(!sel) return;
+    sel.innerHTML = voices.map(v => `<option value="${v.voiceURI}">${v.name} — ${v.lang}</option>`).join('');
+    if(settings.voiceURI) sel.value = settings.voiceURI;
+    else if(voices.length){ settings.voiceURI = voices[0].voiceURI; sel.value = settings.voiceURI; }
+  }
+  window.speechSynthesis.onvoiceschanged = refreshVoices;
+  refreshVoices();
+
+  function speak(text, opts={}){
+    if(!('speechSynthesis' in window)) return;
+    if(!(settings.autoRead)) return;
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'fr-FR';
+    u.rate = opts.rate || 0.95;
+    u.volume = opts.volume ?? 1;
+    if(settings.voiceURI){
+      const v = voices.find(x=>x.voiceURI===settings.voiceURI);
+      if(v) u.voice = v;
+    }
+    synth.cancel();
+    synth.speak(u);
+  }
+
+  // ----- UI wiring & game logic (similar à version précédente) -----
+  function renderProgress(){
+    const scores = load('labo_scores') || {1:{score:0,count:0},2:{score:0,count:0},3:{score:0,count:0},4:{score:0,count:0}};
+    const cont = $('#progress-list');
+    cont.innerHTML = [1,2,3,4].map(k=>{
+      const s = scores[k] || {score:0,count:0};
+      const pct = s.count ? Math.round(100 * s.score / s.count) : 0;
+      return `<div class="btn muted" style="min-width:180px">
+        <strong>Défi ${k}</strong><div style="font-size:13px;color:var(--muted)">Succès: ${pct}% — ${s.count} essai(s)</div>
+      </div>`;
+    }).join('');
+  }
+
+  // Home actions
+  $$('.start-btn').forEach(b=>{
+    b.addEventListener('click', e=>{
+      const game = Number(e.currentTarget.dataset.game);
+      openGame(game);
+    });
+  });
+
+  // Modal & settings
+  const modal = $('#game-modal');
+  const settingsModal = $('#settings-modal');
+
+  $('#btn-close').addEventListener('click', closeModal);
+  $('#btn-settings-close').addEventListener('click', ()=>{ settingsModal.setAttribute('aria-hidden','true'); });
+  $('#btn-settings').addEventListener('click', ()=>{ settingsModal.setAttribute('aria-hidden','false'); refreshVoices(); });
+  $('#btn-ambient-toggle').addEventListener('click', toggleAmbientUI);
+  $('#btn-save-settings').addEventListener('click', saveSettings);
+  $('#voice-select').addEventListener('change', e=> settings.voiceURI = e.target.value);
+  $('#sfx-volume').addEventListener('input', e=>{ if(audioCtx) audioNodes.sfxGain.gain.value = Number(e.target.value); });
+  $('#ambient-volume').addEventListener('input', e=>{ if(audioCtx) audioNodes.ambientGain.gain.value = Number(e.target.value); });
+  $('#auto-read').addEventListener('change', e=> settings.autoRead = e.target.checked);
+
+  function toggleAmbientUI(){
+    if(!audioCtx) return;
+    if(ambientRunning){
+      stopAmbient();
+      settings.ambientOn = false;
+      $('#btn-ambient-toggle').textContent = '🔈';
+    } else {
+      // resume audio context if suspended (user gesture)
+      if(audioCtx.state === 'suspended') audioCtx.resume().catch(()=>{});
+      startAmbient();
+      settings.ambientOn = true;
+      $('#btn-ambient-toggle').textContent = '🔊';
+    }
+    save('labo_settings', settings);
+  }
+
+  function saveSettings(){
+    settings.sfxVolume = Number($('#sfx-volume').value);
+    settings.ambientVolume = Number($('#ambient-volume').value);
+    settings.voiceURI = $('#voice-select').value || settings.voiceURI;
+    settings.autoRead = $('#auto-read').checked;
+    save('labo_settings', settings);
+    showFeedback('Paramètres enregistrés', 'success');
+    settingsModal.setAttribute('aria-hidden','true');
+  }
+
+  // Game state
+  let currentGame = null;
+  let currentIndex = 0;
+  let session = {score:0,count:0};
+
+  function openGame(game){
+    currentGame = game;
+    currentIndex = 0;
+    session = {score:0,count:0};
+    renderGame();
+    modal.setAttribute('aria-hidden','false');
+    $('#game-body').focus();
+    $('#game-title').textContent = `Défi ${game}`;
+  }
+
+  function closeModal(){
+    modal.setAttribute('aria-hidden','true');
+    synth.cancel();
+    // merge session scores into persistent storage
+    const all = load('labo_scores') || {};
+    const prev = all[currentGame] || {score:0,count:0};
+    all[currentGame] = {score: prev.score + session.score, count: prev.count + session.count};
+    save('labo_scores', all);
+    renderProgress();
+  }
+
+  function sample(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+  function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]] } return a; }
+
+  // RENDERERS FOR GAMES
+  function renderGame(){
+    const body = $('#game-body');
+    const g = currentGame;
+    const data = (g===1? gameData.game1 : g===2? gameData.game2 : g===3? gameData.game3 : gameData.game4);
+    const item = (g===3)? data[currentIndex % data.length] : data[Math.floor(Math.random()*data.length)];
+    body.innerHTML = '';
+    $('#feedback').innerHTML = '';
+
+    if(g===1){
+      // Fill-in-the-blank
+      const frag = document.createElement('div');
+      frag.innerHTML = `<p style="font-size:1.2rem;margin-bottom:14px">${item.text.replace('___','<strong>______</strong>')}</p>
+        <input id="fill-input" class="input" placeholder="Écris la réponse ici" aria-label="Réponse" />
+        <div style="margin-top:12px;display:flex;gap:10px">
+          <button id="fill-submit" class="btn primary">Valider</button>
+          <button id="fill-hear" class="btn muted">Écouter</button>
+        </div>`;
+      body.appendChild(frag);
+
+      $('#fill-hear').addEventListener('click', ()=> speak(item.text.replace('___','...')));
+      $('#fill-submit').addEventListener('click', ()=>{
+        const v = normalize($('#fill-input').value);
+        const target = normalize(item.answer);
+        const dist = levenshtein(v, target);
+        const len = Math.max(target.length,1);
+        const ratio = 1 - (dist/len);
+        session.count++;
+        if(ratio >= 0.72){
+          session.score++;
+          playSuccess();
+          showFeedback('Bravo — bonne réponse !', 'success');
+          speak('Très bien !');
+        } else {
+          playFail();
+          showFeedback(`Réponse attendue : ${item.answer}`, 'fail');
+          speak(`La bonne réponse était ${item.answer}`);
+        }
+        setTimeout(()=> renderGame(), 900);
+      });
+
+    } else if(g===2){
+      // Reformulation (multiple choice)
+      const correct = item.reformulations[0];
+      const wrong = item.reformulations[1] || 'Réponse incorrecte';
+      const choices = shuffle([correct, wrong]);
+      const frag = document.createElement('div');
+      frag.innerHTML = `<p style="font-size:1.2rem;margin-bottom:14px">${item.phrase}</p>
+        <div id="choices" style="display:flex;flex-direction:column;gap:10px"></div>`;
+      body.appendChild(frag);
+      const choicesDiv = $('#choices');
+      choices.forEach((c, idx)=>{
+        const btn = document.createElement('button');
+        btn.className = 'btn muted';
+        btn.innerText = c;
+        btn.addEventListener('click', ()=>{
+          session.count++;
+          if(c===correct){
+            session.score++;
+            playSuccess();
+            showFeedback('Exact !', 'success');
+            speak('Bonne réponse');
+          } else {
+            playFail();
+            showFeedback('Ce n\'est pas la bonne reformulation', 'fail');
+            speak(`Non. La bonne reformulation était: ${correct}`);
+          }
+          setTimeout(()=> renderGame(), 900);
+        });
+        choicesDiv.appendChild(btn);
+      });
+      speak(item.phrase);
+
+    } else if(g===3){
+      // Memory: show phrase then ask to type
+      const phrase = item;
+      const frag = document.createElement('div');
+      frag.innerHTML = `<p style="font-size:1.1rem;margin-bottom:14px" id="memory-phrase">${phrase}</p>
+        <div id="memory-controls" style="display:flex;gap:12px">
+          <button id="memory-hide" class="btn primary">Masquer et restituer</button>
+          <button id="memory-hear" class="btn muted">Écouter</button>
+        </div>
+        <div id="memory-answer" style="margin-top:12px;display:none">
+          <input id="memory-input" class="input" placeholder="Écris la phrase que tu te souviens" />
+          <div style="margin-top:10px"><button id="memory-submit" class="btn primary">Valider</button></div>
+        </div>`;
+      body.appendChild(frag);
+      $('#memory-hear').addEventListener('click', ()=> speak(phrase));
+      $('#memory-hide').addEventListener('click', ()=>{
+        $('#memory-phrase').textContent = '••••••••••••';
+        $('#memory-controls').style.display = 'none';
+        $('#memory-answer').style.display = 'block';
+        speak('Maintenant écris la phrase que tu as mémorisée');
+      });
+      $('#memory-submit').addEventListener('click', ()=>{
+        const v = normalize($('#memory-input').value);
+        const target = normalize(phrase);
+        const d = levenshtein(v,target);
+        const ratio = 1 - (d / Math.max(target.length,1));
+        session.count++;
+        if(ratio >= 0.75){
+          session.score++;
+          playSuccess();
+          showFeedback('Très bonne restitution !', 'success');
+          speak('Bien joué !');
+        } else {
+          playFail();
+          showFeedback(`Proche — version attendue: "${phrase}"`, 'fail');
+          speak(`Presque. La phrase était : ${phrase}`);
+        }
+        currentIndex++;
+        setTimeout(()=> renderGame(), 900);
+      });
+
+    } else if(g===4){
+      // Articulation: present tongue-twister, timer to measure speed
+      const phrase = item;
+      const frag = document.createElement('div');
+      frag.innerHTML = `<p style="font-size:1.2rem;margin-bottom:14px">${phrase}</p>
+        <div style="display:flex;gap:10px;align-items:center">
+          <button id="start-timer" class="btn primary">Commencer (chrono)</button>
+          <button id="hear-tw" class="btn muted">Écouter</button>
+          <div id="timer" style="margin-left:8px;font-weight:700;color:var(--muted)">00:00</div>
+        </div>
+        <div style="margin-top:12px"><button id="mark-good" class="btn primary">Bonne diction</button>
+        <button id="mark-bad" class="btn muted">Réessayer</button></div>`;
+      body.appendChild(frag);
+
+      let startT, timerInterval;
+      function updateTimer(){
+        const ms = Date.now() - startT;
+        const s = Math.floor(ms/1000);
+        const mm = String(Math.floor(s/60)).padStart(2,'0');
+        const ss = String(s%60).padStart(2,'0');
+        $('#timer').textContent = `${mm}:${ss}`;
+      }
+      $('#hear-tw').addEventListener('click', ()=> speak(phrase, {rate: 0.95}));
+      $('#start-timer').addEventListener('click', ()=>{
+        // resume audio context if suspended
+        if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume().catch(()=>{});
+        startT = Date.now();
+        $('#timer').textContent = '00:00';
+        clearInterval(timerInterval);
+        timerInterval = setInterval(updateTimer, 250);
+        $('#start-timer').disabled = true;
+        speak('Lis la phrase à haute voix maintenant');
+      });
+
+      $('#mark-good').addEventListener('click', ()=>{
+        clearInterval(timerInterval);
+        $('#start-timer').disabled = false;
+        session.count++;
+        session.score++;
+        playSuccess();
+        showFeedback('Très bon entraînement !', 'success');
+        speak('Bravo, bonne diction');
+        setTimeout(()=> renderGame(), 900);
+      });
+
+      $('#mark-bad').addEventListener('click', ()=>{
+        clearInterval(timerInterval);
+        $('#start-timer').disabled = false;
+        session.count++;
+        playFail();
+        showFeedback('On reprend — tu peux réessayer.', 'fail');
+        speak('Essaie encore, tu peux y arriver');
+      });
+    }
+
+    $('#btn-prev').onclick = ()=> { renderGame(); };
+    $('#btn-next').onclick = ()=> { renderGame(); };
+  }
+
+  // Initialize UI
+  function initUI(){
+    $('#sfx-volume').value = settings.sfxVolume ?? DEFAULTS.sfxVolume;
+    $('#ambient-volume').value = settings.ambientVolume ?? DEFAULTS.ambientVolume;
+    $('#auto-read').checked = settings.autoRead !== false;
+    if(settings.ambientOn) $('#btn-ambient-toggle').textContent='🔊'; else $('#btn-ambient-toggle').textContent='🔈';
+    renderProgress();
+
+    // keyboard shortcuts
+    document.addEventListener('keydown', (e)=>{
+      if(e.key === 'Escape') {
+        if(modal.getAttribute('aria-hidden')==='false') closeModal();
+        if(settingsModal.getAttribute('aria-hidden')==='false') settingsModal.setAttribute('aria-hidden','true');
+      }
+    });
+  }
+
+  initUI();
+})();
