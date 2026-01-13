@@ -1,60 +1,128 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Mini-Jeu Orthophonie — Claude</title>
-    <link rel="stylesheet" href="styles.css" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Labo Ortho — Claude</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Bonjour Claude 👋</h1>
-            <p class="subtitle">Un mini-jeu d'entraînement cognitif et d'orthophonie, personnalisé pour toi</p>
-        </header>
-
-        <main id="main-menu" class="game-grid" aria-label="Menu principal">
-            <article id="game1-card" class="game-card" tabindex="0" role="button" aria-pressed="false" aria-label="Défi 1 Textes à trous">
-                <div class="card-image" aria-hidden="true"></div>
-                <div class="card-content">
-                    <h3>Défi 1 — Textes à trous</h3>
-                    <p>Complète les phrases avec le mot manquant.</p>
-                </div>
-            </article>
-
-            <article id="game2-card" class="game-card" tabindex="0" role="button" aria-pressed="false" aria-label="Défi 2 Reformulation">
-                <div class="card-image" aria-hidden="true"></div>
-                <div class="card-content">
-                    <h3>Défi 2 — Reformulation</h3>
-                    <p>Choisis la meilleure reformulation / synonyme.</p>
-                </div>
-            </article>
-
-            <article id="game3-card" class="game-card" tabindex="0" role="button" aria-pressed="false" aria-label="Défi 3 Mémoire">
-                <div class="card-image" aria-hidden="true"></div>
-                <div class="card-content">
-                    <h3>Défi 3 — Mémoire de phrases</h3>
-                    <p>Lis puis reproduis la phrase.</p>
-                </div>
-            </article>
-
-            <article id="game4-card" class="game-card" tabindex="0" role="button" aria-pressed="false" aria-label="Défi 4 Articulation">
-                <div class="card-image" aria-hidden="true"></div>
-                <div class="card-content">
-                    <h3>Défi 4 — Articulation</h3>
-                    <p>Lis rapidement à voix haute (exercices d'articulation).</p>
-                </div>
-            </article>
-        </main>
-
-        <section id="game-zone" class="hidden" aria-live="polite" aria-atomic="true">
-            <button id="back-button" class="btn btn-back" aria-label="Retour">← Retour</button>
-            <div id="game-content" class="game-inner"></div>
-            <div id="score-display" class="score-display" aria-live="polite"></div>
-        </section>
+  <header class="topbar" role="banner" aria-label="Bannière du jeu">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">⟡</div>
+      <div>
+        <h1>LABO ORTHO — Claude</h1>
+        <p class="subtitle">Exercices personnalisés • Ludique • Professionnel</p>
+      </div>
     </div>
 
-    <script src="data.js"></script>
-    <script src="app.js"></script>
+    <div class="controls">
+      <button id="btn-settings" class="btn icon" title="Paramètres" aria-label="Paramètres">⚙️</button>
+      <button id="btn-ambient-toggle" class="btn icon" title="Activer / désactiver le fond sonore" aria-label="Ambiance">🔊</button>
+    </div>
+  </header>
+
+  <main id="main" role="main">
+    <section class="intro">
+      <h2>Bonjour Claude — Choisis un défi</h2>
+      <p>4 défis progressifs — mémoire, langage, reformulation, articulation.</p>
+    </section>
+
+    <section class="grid" aria-label="Liste des défis">
+      <article class="card" data-game="1" style="background-image: url('family1.jpeg')">
+        <div class="card-body">
+          <h3>Défi 1 — Textes à trous</h3>
+          <p>Remplir les blancs : rappel de mots, famille et culture générale.</p>
+          <button class="btn primary start-btn" data-game="1" aria-label="Lancer Défi 1">Jouer</button>
+        </div>
+      </article>
+
+      <article class="card" data-game="2" style="background-image: url('family2.jpeg')">
+        <div class="card-body">
+          <h3>Défi 2 — Reformulation</h3>
+          <p>Choisis la reformulation correcte — travail du sens et vocabulaire.</p>
+          <button class="btn primary start-btn" data-game="2" aria-label="Lancer Défi 2">Jouer</button>
+        </div>
+      </article>
+
+      <article class="card" data-game="3" style="background-image: url('family3.jpeg')">
+        <div class="card-body">
+          <h3>Défi 3 — Mémoire de phrases</h3>
+          <p>Mémorise et restitue des phrases ciblées.</p>
+          <button class="btn primary start-btn" data-game="3" aria-label="Lancer Défi 3">Jouer</button>
+        </div>
+      </article>
+
+      <article class="card" data-game="4" style="background-image: url('family4.jpeg')">
+        <div class="card-body">
+          <h3>Défi 4 — Articulation rapide</h3>
+          <p>Tire ta diction : virelangues et vitesse.</p>
+          <button class="btn primary start-btn" data-game="4" aria-label="Lancer Défi 4">Jouer</button>
+        </div>
+      </article>
+    </section>
+
+    <section class="scoreboard" aria-live="polite">
+      <h4>Progression</h4>
+      <div id="progress-list">Chargement des scores...</div>
+    </section>
+  </main>
+
+  <!-- Modal jeu -->
+  <div id="game-modal" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-card">
+      <header class="modal-head">
+        <h3 id="game-title">Jeu</h3>
+        <div>
+          <button id="btn-speak" class="btn icon" title="Lire la consigne" aria-label="Lire la consigne">🔈</button>
+          <button id="btn-close" class="btn icon" title="Fermer" aria-label="Fermer">✖️</button>
+        </div>
+      </header>
+      <main class="modal-body" id="game-body" tabindex="0"></main>
+      <footer class="modal-foot">
+        <div id="feedback" aria-live="assertive"></div>
+        <div class="modal-actions">
+          <button id="btn-prev" class="btn muted">← Précédent</button>
+          <button id="btn-next" class="btn primary">Suivant →</button>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Paramètres -->
+  <div id="settings-modal" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-card small">
+      <header class="modal-head">
+        <h3>Paramètres</h3>
+        <button id="btn-settings-close" class="btn icon" aria-label="Fermer paramètres">✖️</button>
+      </header>
+      <main class="modal-body">
+        <label class="row">
+          <span>Voix (lecture) :</span>
+          <select id="voice-select" class="input"></select>
+        </label>
+        <label class="row">
+          <span>Volume bruitages :</span>
+          <input id="sfx-volume" type="range" min="0" max="1" step="0.05" value="0.6"/>
+        </label>
+        <label class="row">
+          <span>Volume ambiance :</span>
+          <input id="ambient-volume" type="range" min="0" max="1" step="0.05" value="0.25"/>
+        </label>
+        <label class="row">
+          <span>Lecture automatique :</span>
+          <input id="auto-read" type="checkbox" />
+        </label>
+        <p class="muted">Les réglages sont sauvegardés localement.</p>
+      </main>
+      <footer class="modal-foot">
+        <button id="btn-save-settings" class="btn primary">Enregistrer</button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Data & Script -->
+  <script src="data.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
