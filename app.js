@@ -3,6 +3,12 @@ const app = document.getElementById("app");
 function renderMenu() {
   app.innerHTML = `
     <div class="card">
+          <img
+        src="./assets/family2.jpeg"
+        alt="Photo de famille"
+        style="width:100%;max-height:320px;object-fit:cover;border-radius:12px;margin-bottom:14px;"
+      />
+
       <h2>Bienvenue Claude 👋</h2>
       <p>Choisis un exercice :</p>
 
