@@ -1,365 +1,150 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
   <title>Le Labo d’Ortho de Claude</title>
-  <link rel="stylesheet" href="styles.css?v=1"/>
+  <link rel="stylesheet" href="styles.css" />
 </head>
-
 <body>
-  <a class="skip" href="#main">Aller au contenu</a>
+  <div id="app" class="app-container" aria-live="polite" aria-atomic="true">
+    <!-- Onboarding / Splash -->
+    <section id="onboarding" class="screen active" role="main" aria-label="Bienvenue au Labo d’Ortho de Claude">
+      <h1>Le Labo d’Ortho de Claude</h1>
+      <p class="subtitle">Un entraînement doux et ludique pour le langage et la mémoire</p>
+      <button id="start-btn" class="btn primary" aria-label="Commencer le jeu">Commencer</button>
+      <button id="about-btn" class="btn secondary" aria-label="À propos du jeu">À propos</button>
+    </section>
 
-  <header class="siteHeader">
-    <div class="brand">
-      <div class="logoDot" aria-hidden="true"></div>
-      <div>
-        <h1>🧠 Le Labo d’Ortho de Claude</h1>
-        <p class="subtitle">Un entraînement léger, sérieux, et souriant — pour Claude (79 ans)</p>
-      </div>
-    </div>
-
-    <div class="topControls">
-      <button id="btnNight" class="btn ghost" type="button" title="Mode nuit">🌙 Mode nuit</button>
-      <button id="btnBig" class="btn ghost" type="button" title="Très grand texte">🔎 Très grand texte</button>
-
-      <div class="audioCtl">
-        <button id="btnSound" class="btn ghost" type="button">🔊 Son : OFF</button>
-        <label class="vol">
-          <span>Volume</span>
-          <input id="vol" type="range" min="0" max="100" value="35" />
-        </label>
-      </div>
-    </div>
-  </header>
-
-  <main id="main" class="mainWrap">
-    <!-- HOME -->
-    <section id="screenHome" class="screen">
-      <div class="grid2">
-        <div class="card hero">
-          <h2>Bonjour Claude 👋</h2>
-          <p>
-            Choisis une épreuve. Tu peux faire <strong>10, 20 ou 30 questions</strong>.
-            Le but : rester actif, se faire plaisir, et progresser en douceur.
-          </p>
-          <div class="miniRow">
-            <button id="btnDashboard" class="btn primary">📊 Tableau de bord</button>
-            <button id="btnAbout" class="btn">ℹ️ À propos</button>
-            <button id="btnTips" class="btn">✅ Conseils</button>
-          </div>
-          <p class="hint">
-            Astuce : le son peut nécessiter un premier clic (règle du navigateur).
-          </p>
-        </div>
-
-        <div class="card profile">
-          <h3>Profil</h3>
-          <div class="profileRow">
-            <div class="avatar" aria-hidden="true">C</div>
-            <div>
-              <div class="k">Joueur</div>
-              <div class="v" id="profileName">Claude</div>
-            </div>
-          </div>
-          <div class="profileStats">
-            <div class="pill"><span class="k">Meilleur global</span> <span class="v" id="bestGlobal">0</span></div>
-            <div class="pill"><span class="k">Temps moyen</span> <span class="v" id="avgTime">—</span></div>
-            <div class="pill"><span class="k">Sessions (10 dernières)</span> <span class="v" id="sessCount">0</span></div>
-          </div>
-          <button id="btnResetAll" class="btn danger">🧹 Réinitialiser les données (local)</button>
-          <p class="hint small">Réinitialise scores, historique et questions (seed).</p>
-        </div>
-      </div>
-
-      <h2 class="sectionTitle">Les 4 épreuves</h2>
-
-      <div class="cards4" role="list">
-        <!-- Card 1 -->
-        <article class="card gameCard" role="listitem">
-          <img class="cardImg" src="assets/family1.jpeg" alt="Illustration épreuve 1"/>
-          <div class="cardBody">
-            <h3>1) Texte à trous</h3>
-            <p>Clarté, grammaire, connecteurs, vocabulaire courant. Feedback pédagogique.</p>
-            <div class="meta">
-              <span class="tag">Difficulté : <strong>Facile</strong></span>
-              <span class="tag">QCM 4 choix</span>
-            </div>
-            <div class="miniRow">
-              <button class="btn primary" data-open-config="cloze">Jouer</button>
-              <button class="btn ghost" data-reset-bank="cloze">♻︎ Nouvelles 200 questions</button>
-            </div>
-          </div>
+    <!-- Menu principal -->
+    <section id="menu" class="screen" role="main" aria-label="Menu principal">
+      <h2>Choisis une épreuve</h2>
+      <div class="cards-container" role="list">
+        <article class="card" role="listitem" tabindex="0" data-epreuve="1" aria-label="Texte à trous, difficulté facile">
+          <img src="assets/family1.jpeg" alt="Image famille 1" />
+          <h3>Texte à trous</h3>
+          <p>Complète la phrase avec le bon mot. Accord, vocabulaire, grammaire.</p>
+          <p class="difficulty">Difficulté : Facile</p>
+          <button class="btn play-btn" aria-label="Jouer à Texte à trous">Jouer</button>
         </article>
-
-        <!-- Card 2 -->
-        <article class="card gameCard" role="listitem">
-          <img class="cardImg" src="assets/family2.jpeg" alt="Illustration épreuve 2"/>
-          <div class="cardBody">
-            <h3>2) Reformulation / Synonymes</h3>
-            <p>Souplesse du langage : phrases équivalentes, synonymes proches, compréhension fine.</p>
-            <div class="meta">
-              <span class="tag">Difficulté : <strong>Facile</strong></span>
-              <span class="tag">1 bonne réponse</span>
-            </div>
-            <div class="miniRow">
-              <button class="btn primary" data-open-config="syn">Jouer</button>
-              <button class="btn ghost" data-reset-bank="syn">♻︎ Nouvelles 200 questions</button>
-            </div>
-          </div>
+        <article class="card" role="listitem" tabindex="0" data-epreuve="2" aria-label="Reformulation et synonymes, difficulté facile">
+          <img src="assets/family2.jpeg" alt="Image famille 2" />
+          <h3>Reformulation / Synonymes</h3>
+          <p>Choisis la meilleure reformulation ou le synonyme le plus proche.</p>
+          <p class="difficulty">Difficulté : Facile</p>
+          <button class="btn play-btn" aria-label="Jouer à Reformulation et synonymes">Jouer</button>
         </article>
-
-        <!-- Card 3 -->
-        <article class="card gameCard" role="listitem">
-          <img class="cardImg" src="assets/family3.jpeg" alt="Illustration épreuve 3"/>
-          <div class="cardBody">
-            <h3>3) Mémoire de phrases</h3>
-            <p>On lit une phrase 6–10s puis on la reconstruit en cliquant les mots dans l’ordre.</p>
-            <div class="meta">
-              <span class="tag">Difficulté : <strong>Facile</strong></span>
-              <span class="tag">Mémoire verbale douce</span>
-            </div>
-            <div class="miniRow">
-              <button class="btn primary" data-open-config="memory">Jouer</button>
-              <button class="btn ghost" data-reset-bank="memory">♻︎ Nouvelles 200 questions</button>
-            </div>
-          </div>
+        <article class="card" role="listitem" tabindex="0" data-epreuve="3" aria-label="Mémoire de phrases, difficulté facile">
+          <img src="assets/family3.jpeg" alt="Image famille 3" />
+          <h3>Mémoire de phrases</h3>
+          <p>Retrouve l’ordre des mots après avoir mémorisé la phrase.</p>
+          <p class="difficulty">Difficulté : Facile</p>
+          <button class="btn play-btn" aria-label="Jouer à Mémoire de phrases">Jouer</button>
         </article>
-
-        <!-- Card 4 -->
-        <article class="card gameCard" role="listitem">
-          <img class="cardImg" src="assets/family4.jpeg" alt="Illustration épreuve 4"/>
-          <div class="cardBody">
-            <h3>4) Vitesse & articulation</h3>
-            <p>Virelangues amusants + chrono doux + auto-évaluation + petite question d’attention.</p>
-            <div class="meta">
-              <span class="tag">Difficulté : <strong>Facile</strong></span>
-              <span class="tag">Sans micro</span>
-            </div>
-            <div class="miniRow">
-              <button class="btn primary" data-open-config="speech">Jouer</button>
-              <button class="btn ghost" data-reset-bank="speech">♻︎ Nouvelles 200 questions</button>
-            </div>
-          </div>
+        <article class="card" role="listitem" tabindex="0" data-epreuve="4" aria-label="Vitesse et articulation, difficulté facile">
+          <img src="assets/family4.jpeg" alt="Image famille 4" />
+          <h3>Vitesse & articulation</h3>
+          <p>Lis vite, évalue-toi, et réponds à une question simple.</p>
+          <p class="difficulty">Difficulté : Facile</p>
+          <button class="btn play-btn" aria-label="Jouer à Vitesse et articulation">Jouer</button>
         </article>
       </div>
+      <button id="dashboard-btn" class="btn secondary" aria-label="Voir le tableau de bord">Tableau de bord</button>
+      <button id="settings-btn" class="btn secondary" aria-label="Paramètres du jeu">Paramètres</button>
     </section>
 
-    <!-- CONFIG -->
-    <section id="screenConfig" class="screen hidden" aria-labelledby="cfgTitle">
-      <div class="card">
-        <div class="topRow">
-          <h2 id="cfgTitle">Configurer la session</h2>
-          <button id="btnCfgBack" class="btn ghost">← Retour</button>
-        </div>
-
-        <div class="cfgGrid">
-          <div class="cfgBlock">
-            <h3>Épreuve</h3>
-            <div id="cfgGameName" class="bigLabel">—</div>
-            <p id="cfgGameDesc" class="hint">—</p>
-          </div>
-
-          <div class="cfgBlock">
-            <h3>Nombre de questions</h3>
-            <div class="seg">
-              <button class="segBtn" data-qcount="10">10</button>
-              <button class="segBtn" data-qcount="20">20</button>
-              <button class="segBtn" data-qcount="30">30</button>
-            </div>
-            <p class="hint small">Tu peux refaire autant de sessions que tu veux.</p>
-          </div>
-
-          <div class="cfgBlock">
-            <h3>Difficulté</h3>
-            <div class="seg">
-              <button class="segBtn" data-diff="easy">Facile</button>
-              <button class="segBtn" data-diff="medium">Moyen</button>
-              <button class="segBtn" data-diff="plus">+</button>
-            </div>
-            <p class="hint small">Par défaut : Facile.</p>
-          </div>
-
-          <div class="cfgBlock">
-            <h3>Mode entraînement</h3>
-            <label class="toggle">
-              <input id="cfgTraining" type="checkbox"/>
-              <span>Chrono informatif (sans pression)</span>
-            </label>
-            <label class="toggle">
-              <input id="cfgStreak" type="checkbox" checked/>
-              <span>Petit bonus de série (streak)</span>
-            </label>
-            <label class="toggle">
-              <input id="cfgMouseOnly" type="checkbox"/>
-              <span>Mode “souris uniquement” (gros focus cliquable)</span>
-            </label>
-          </div>
-        </div>
-
-        <div class="cfgActions">
-          <button id="btnStart" class="btn primary">▶️ Démarrer</button>
-          <button id="btnResetThisBank" class="btn">♻︎ Réinitialiser les 200 questions (seed)</button>
-        </div>
-      </div>
+    <!-- Paramètres -->
+    <section id="settings" class="screen" role="main" aria-label="Paramètres du jeu">
+      <h2>Paramètres</h2>
+      <form id="settings-form">
+        <fieldset>
+          <legend>Nombre de questions par session</legend>
+          <label><input type="radio" name="sessionLength" value="10" checked /> 10</label>
+          <label><input type="radio" name="sessionLength" value="20" /> 20</label>
+          <label><input type="radio" name="sessionLength" value="30" /> 30</label>
+        </fieldset>
+        <fieldset>
+          <legend>Niveau de difficulté</legend>
+          <label><input type="radio" name="difficulty" value="facile" checked /> Facile</label>
+          <label><input type="radio" name="difficulty" value="moyen" /> Moyen</label>
+          <label><input type="radio" name="difficulty" value="difficile" /> +</label>
+        </fieldset>
+        <fieldset>
+          <legend>Accessibilité</legend>
+          <label><input type="checkbox" id="largeTextToggle" /> Très grand texte</label>
+          <label><input type="checkbox" id="mouseOnlyToggle" /> Mode souris uniquement</label>
+          <label><input type="checkbox" id="darkModeToggle" /> Mode nuit</label>
+        </fieldset>
+        <fieldset>
+          <legend>Audio</legend>
+          <button type="button" id="audioToggle" aria-pressed="false" aria-label="Activer ou désactiver le son">Son : Off</button>
+          <label for="volumeRange">Volume</label>
+          <input type="range" id="volumeRange" min="0" max="1" step="0.05" value="0.5" />
+        </fieldset>
+        <button type="submit" class="btn primary">Sauvegarder</button>
+        <button type="button" id="settingsBackBtn" class="btn secondary">Retour</button>
+      </form>
     </section>
 
-    <!-- GAME -->
-    <section id="screenGame" class="screen hidden" aria-live="polite">
-      <div class="card">
-        <div class="gameTop">
-          <div>
-            <h2 id="gameTitle">—</h2>
-            <p id="gameSub" class="hint">—</p>
-          </div>
-
-          <div class="gamePills">
-            <div class="pill"><span class="k">Score</span> <span class="v" id="uiScore">0</span></div>
-            <div class="pill"><span class="k">Série</span> <span class="v" id="uiStreak">0</span></div>
-            <div class="pill"><span class="k">Question</span> <span class="v"><span id="uiIndex">1</span>/<span id="uiTotal">10</span></span></div>
-            <div class="pill"><span class="k">Temps</span> <span class="v" id="uiTime">00:00</span></div>
-          </div>
+    <!-- Épreuve -->
+    <section id="game" class="screen" role="main" aria-label="Épreuve en cours" aria-live="assertive" aria-atomic="true">
+      <header>
+        <h2 id="game-title"></h2>
+        <div id="game-info" aria-live="polite" aria-atomic="true">
+          <span id="question-counter"></span> | <span id="score-display"></span> | <span id="timer-display"></span>
         </div>
-
-        <div class="progressBar" aria-hidden="true">
-          <div id="progFill" class="progFill"></div>
-        </div>
-
-        <div id="gameArea" class="gameArea">
-          <!-- rendu dynamique -->
-        </div>
-
-        <div class="gameActions">
-          <button id="btnPause" class="btn">⏸ Pause</button>
-          <button id="btnQuit" class="btn ghost">⟵ Quitter</button>
-        </div>
-      </div>
-
-      <div id="pauseOverlay" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="pauseTitle">
-        <div class="modal">
-          <h3 id="pauseTitle">Pause</h3>
-          <p class="hint">Tu peux reprendre tranquillement.</p>
-          <div class="miniRow">
-            <button id="btnResume" class="btn primary">Reprendre</button>
-            <button id="btnQuit2" class="btn ghost">Quitter</button>
-          </div>
-        </div>
-      </div>
+      </header>
+      <main id="game-content" tabindex="0"></main>
+      <nav id="game-controls">
+        <button id="pause-btn" class="btn secondary" aria-label="Pause">Pause</button>
+        <button id="quit-btn" class="btn secondary" aria-label="Quitter l’épreuve">Quitter</button>
+      </nav>
     </section>
 
-    <!-- DASHBOARD -->
-    <section id="screenDashboard" class="screen hidden">
-      <div class="card">
-        <div class="topRow">
-          <h2>📊 Tableau de bord de Claude</h2>
-          <button id="btnDashBack" class="btn ghost">← Retour</button>
-        </div>
-
-        <div class="dashGrid">
-          <div class="dashCard">
-            <h3>Score global</h3>
-            <div class="bigNum" id="dashGlobal">0</div>
-            <p class="hint">Somme des meilleurs scores par épreuve (sur 30 questions).</p>
-          </div>
-
-          <div class="dashCard">
-            <h3>Meilleurs scores</h3>
-            <ul class="list">
-              <li><span>Texte à trous</span> <strong id="bestCloze">0</strong></li>
-              <li><span>Synonymes</span> <strong id="bestSyn">0</strong></li>
-              <li><span>Mémoire</span> <strong id="bestMem">0</strong></li>
-              <li><span>Articulation</span> <strong id="bestSpeech">0</strong></li>
-            </ul>
-          </div>
-
-          <div class="dashCard">
-            <h3>Badges (doux)</h3>
-            <div id="badges" class="badges"></div>
-            <p class="hint small">Jamais culpabilisant : juste des encouragements.</p>
-          </div>
-        </div>
-
-        <div class="dashCard">
-          <h3>10 dernières sessions</h3>
-          <div class="tableWrap">
-            <table class="tbl">
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Épreuve</th>
-                  <th>Score</th>
-                  <th>Questions</th>
-                  <th>Durée</th>
-                </tr>
-              </thead>
-              <tbody id="sessRows"></tbody>
-            </table>
-          </div>
-          <p class="hint small">Historique stocké en local (sur cet appareil).</p>
-        </div>
-      </div>
+    <!-- Pause -->
+    <section id="pause-screen" class="screen" role="dialog" aria-modal="true" aria-labelledby="pause-title" hidden>
+      <h2 id="pause-title">Pause</h2>
+      <button id="resume-btn" class="btn primary">Reprendre</button>
+      <button id="quit-from-pause-btn" class="btn secondary">Quitter</button>
     </section>
 
-    <!-- ABOUT -->
-    <section id="screenAbout" class="screen hidden">
-      <div class="card">
-        <div class="topRow">
-          <h2>ℹ️ À propos</h2>
-          <button id="btnAboutBack" class="btn ghost">← Retour</button>
-        </div>
-
-        <h3>Objectif</h3>
-        <p>
-          <strong>Le Labo d’Ortho de Claude</strong> est un mini-jeu web statique (sans serveur),
-          conçu pour travailler doucement : <em>lexique, syntaxe, attention, mémoire de travail</em>
-          et <em>fluidité de lecture</em>, avec un ton chaleureux et encourageant.
-        </p>
-
-        <h3>Méthode</h3>
-        <p>
-          Les exercices proposent des tâches courtes, variées et progressives : choix multiples, reformulation,
-          reconstruction de phrases, et lecture amusante. Un feedback simple accompagne chaque réponse
-          pour renforcer la compréhension.
-        </p>
-        <p>
-          Les questions sont générées à partir de banques de mots et de modèles, puis fixées dans le temps grâce
-          à une génération <em>stable</em> (seed) sauvegardée en local : cela permet une cohérence d’une session à l’autre,
-          tout en gardant la possibilité de renouveler les 200 items.
-        </p>
-
-        <h3>Disclaimer</h3>
-        <p class="warn">
-          Ce jeu est <strong>ludique</strong> et ne remplace pas un professionnel de santé.
-          Il ne prétend pas diagnostiquer ni “soigner” quoi que ce soit.
-        </p>
-      </div>
+    <!-- Fin de session -->
+    <section id="end-screen" class="screen" role="main" aria-label="Fin de la session">
+      <h2>Session terminée</h2>
+      <p id="final-score"></p>
+      <p id="final-feedback"></p>
+      <button id="replay-btn" class="btn primary">Rejouer 10 questions</button>
+      <button id="back-to-menu-btn" class="btn secondary">Retour au menu</button>
     </section>
 
-    <!-- TIPS -->
-    <section id="screenTips" class="screen hidden">
-      <div class="card">
-        <div class="topRow">
-          <h2>✅ Conseils d’utilisation</h2>
-          <button id="btnTipsBack" class="btn ghost">← Retour</button>
-        </div>
-
-        <ul class="tips">
-          <li>Privilégie des sessions courtes (10 questions) et régulières.</li>
-          <li>Si une question semble “dure”, c’est OK : l’important est d’essayer.</li>
-          <li>En “Très grand texte”, tout devient plus confortable.</li>
-          <li>Le mode “Chrono informatif” donne un repère… sans stress.</li>
-          <li>Tu peux refaire une épreuve autant de fois que tu veux.</li>
-          <li>Si tu veux renouveler : “♻︎ Nouvelles 200 questions”.</li>
-        </ul>
-
-        <p class="hint">
-          Petite règle d’or : <strong>on vise le plaisir + la régularité</strong>, pas la perfection.
-        </p>
-      </div>
+    <!-- Tableau de bord -->
+    <section id="dashboard" class="screen" role="main" aria-label="Tableau de bord de Claude">
+      <h2>Tableau de bord de Claude</h2>
+      <div id="dashboard-content" tabindex="0"></div>
+      <button id="dashboard-back-btn" class="btn secondary">Retour</button>
     </section>
-  </main>
 
-  <script src="data.js?v=1"></script>
-  <script src="app.js?v=1"></script>
+    <!-- À propos -->
+    <section id="about" class="screen" role="main" aria-label="À propos du jeu">
+      <h2>À propos</h2>
+      <p>Bienvenue dans <strong>Le Labo d’Ortho de Claude</strong>, un jeu conçu pour entraîner doucement le langage, la mémoire et l’attention.</p>
+      <p>Ce jeu propose 4 épreuves variées, avec un ton chaleureux et bienveillant, sans stigmatisation.</p>
+      <p>Il intègre des références culturelles respectueuses, notamment autour de la famille et de la culture juive, sans politique ni stéréotypes.</p>
+      <h3>Méthode</h3>
+      <p>Le jeu travaille plusieurs fonctions cognitives : lexique, syntaxe, mémoire de travail, attention, fluidité de lecture. Il est conçu pour être progressif et encourageant.</p>
+      <p>Il ne remplace en aucun cas un professionnel de santé.</p>
+      <h3>Conseils d’utilisation</h3>
+      <ul>
+        <li>Choisissez un moment calme et confortable.</li>
+        <li>Privilégiez une session courte et régulière.</li>
+        <li>Utilisez les paramètres pour adapter le jeu à vos besoins.</li>
+        <li>Amusez-vous et soyez indulgent avec vous-même.</li>
+      </ul>
+      <button id="about-back-btn" class="btn secondary">Retour</button>
+    </section>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
