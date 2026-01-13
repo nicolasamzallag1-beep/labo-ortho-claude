@@ -3,28 +3,50 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Labo Ortho — Quiz</title>
+  <title>Le Labo d’Ortho de Claude</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 
 <body>
   <main class="app">
-    <header class="top">
-      <div class="brand">
-        <div class="dot"></div>
-        <h1>Labo Ortho</h1>
+    <!-- ÉCRAN ACCUEIL -->
+    <section id="screenHome" class="card home">
+      <header class="homeHeader">
+        <h1>🧠 Le Labo d’Ortho de Claude</h1>
+        <p>Jeu d’entraînement ludique — créé par Nicolas</p>
+      </header>
+
+      <div class="cover">
+        <img id="coverImg" src="family2.jpeg" alt="Photo de couverture" />
       </div>
 
-      <div class="stats">
-        <div class="pill">Score : <span id="score">0</span></div>
-        <div class="pill"><span id="progress">0</span>/<span id="total">0</span></div>
+      <div class="homeActions">
+        <button id="btnStart" class="btn primary">▶️ Démarrer</button>
+        <button id="btnMusicHome" class="btn ghost">🎵 Musique : OFF</button>
       </div>
-    </header>
 
-    <section class="card">
+      <small class="hint">
+        Astuce : sur iPhone / Safari, l’audio démarre seulement après un clic (c’est normal).
+      </small>
+    </section>
+
+    <!-- ÉCRAN JEU -->
+    <section id="screenGame" class="card hidden">
+      <header class="top">
+        <div class="brand">
+          <div class="dot"></div>
+          <h2>Labo Ortho</h2>
+        </div>
+
+        <div class="stats">
+          <div class="pill">Score : <span id="score">0</span></div>
+          <div class="pill"><span id="progress">0</span>/<span id="total">0</span></div>
+        </div>
+      </header>
+
       <div class="qwrap">
-        <h2 id="question">Chargement…</h2>
-        <img id="photo" alt="" />
+        <h3 id="question">Chargement…</h3>
+        <img id="photo" alt="" class="qphoto hidden" />
       </div>
 
       <div id="answers" class="answers"></div>
@@ -32,11 +54,12 @@
       <div class="actions">
         <button id="btnNext" class="btn" disabled>Question suivante</button>
         <button id="btnRestart" class="btn ghost">Rejouer</button>
+        <button id="btnBackHome" class="btn ghost">Retour menu</button>
       </div>
 
       <div class="audioRow">
         <button id="btnMusic" class="btn ghost">🎵 Musique : OFF</button>
-        <small class="hint">Astuce : clique une fois sur la page pour autoriser l’audio.</small>
+        <small class="hint">Si tu n’entends rien : clique une fois dans la page, puis retente.</small>
       </div>
     </section>
 
@@ -48,6 +71,5 @@
   <!-- IMPORTANT : data.js AVANT app.js -->
   <script src="data.js"></script>
   <script src="app.js"></script>
-
 </body>
 </html>
