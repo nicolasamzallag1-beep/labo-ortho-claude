@@ -1,150 +1,60 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-  <title>Le Labo d’Ortho de Claude</title>
-  <link rel="stylesheet" href="styles.css" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Mini-Jeu Orthophonie — Claude</title>
+    <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div id="app" class="app-container" aria-live="polite" aria-atomic="true">
-    <!-- Onboarding / Splash -->
-    <section id="onboarding" class="screen active" role="main" aria-label="Bienvenue au Labo d’Ortho de Claude">
-      <h1>Le Labo d’Ortho de Claude</h1>
-      <p class="subtitle">Un entraînement doux et ludique pour le langage et la mémoire</p>
-      <button id="start-btn" class="btn primary" aria-label="Commencer le jeu">Commencer</button>
-      <button id="about-btn" class="btn secondary" aria-label="À propos du jeu">À propos</button>
-    </section>
+    <div class="container">
+        <header>
+            <h1>Bonjour Claude 👋</h1>
+            <p class="subtitle">Un mini-jeu d'entraînement cognitif et d'orthophonie, personnalisé pour toi</p>
+        </header>
 
-    <!-- Menu principal -->
-    <section id="menu" class="screen" role="main" aria-label="Menu principal">
-      <h2>Choisis une épreuve</h2>
-      <div class="cards-container" role="list">
-        <article class="card" role="listitem" tabindex="0" data-epreuve="1" aria-label="Texte à trous, difficulté facile">
-          <img src="assets/family1.jpeg" alt="Image famille 1" />
-          <h3>Texte à trous</h3>
-          <p>Complète la phrase avec le bon mot. Accord, vocabulaire, grammaire.</p>
-          <p class="difficulty">Difficulté : Facile</p>
-          <button class="btn play-btn" aria-label="Jouer à Texte à trous">Jouer</button>
-        </article>
-        <article class="card" role="listitem" tabindex="0" data-epreuve="2" aria-label="Reformulation et synonymes, difficulté facile">
-          <img src="assets/family2.jpeg" alt="Image famille 2" />
-          <h3>Reformulation / Synonymes</h3>
-          <p>Choisis la meilleure reformulation ou le synonyme le plus proche.</p>
-          <p class="difficulty">Difficulté : Facile</p>
-          <button class="btn play-btn" aria-label="Jouer à Reformulation et synonymes">Jouer</button>
-        </article>
-        <article class="card" role="listitem" tabindex="0" data-epreuve="3" aria-label="Mémoire de phrases, difficulté facile">
-          <img src="assets/family3.jpeg" alt="Image famille 3" />
-          <h3>Mémoire de phrases</h3>
-          <p>Retrouve l’ordre des mots après avoir mémorisé la phrase.</p>
-          <p class="difficulty">Difficulté : Facile</p>
-          <button class="btn play-btn" aria-label="Jouer à Mémoire de phrases">Jouer</button>
-        </article>
-        <article class="card" role="listitem" tabindex="0" data-epreuve="4" aria-label="Vitesse et articulation, difficulté facile">
-          <img src="assets/family4.jpeg" alt="Image famille 4" />
-          <h3>Vitesse & articulation</h3>
-          <p>Lis vite, évalue-toi, et réponds à une question simple.</p>
-          <p class="difficulty">Difficulté : Facile</p>
-          <button class="btn play-btn" aria-label="Jouer à Vitesse et articulation">Jouer</button>
-        </article>
-      </div>
-      <button id="dashboard-btn" class="btn secondary" aria-label="Voir le tableau de bord">Tableau de bord</button>
-      <button id="settings-btn" class="btn secondary" aria-label="Paramètres du jeu">Paramètres</button>
-    </section>
+        <main id="main-menu" class="game-grid" aria-label="Menu principal">
+            <article id="game1-card" class="game-card" tabindex="0" role="button" aria-pressed="false" aria-label="Défi 1 Textes à trous">
+                <div class="card-image" aria-hidden="true"></div>
+                <div class="card-content">
+                    <h3>Défi 1 — Textes à trous</h3>
+                    <p>Complète les phrases avec le mot manquant.</p>
+                </div>
+            </article>
 
-    <!-- Paramètres -->
-    <section id="settings" class="screen" role="main" aria-label="Paramètres du jeu">
-      <h2>Paramètres</h2>
-      <form id="settings-form">
-        <fieldset>
-          <legend>Nombre de questions par session</legend>
-          <label><input type="radio" name="sessionLength" value="10" checked /> 10</label>
-          <label><input type="radio" name="sessionLength" value="20" /> 20</label>
-          <label><input type="radio" name="sessionLength" value="30" /> 30</label>
-        </fieldset>
-        <fieldset>
-          <legend>Niveau de difficulté</legend>
-          <label><input type="radio" name="difficulty" value="facile" checked /> Facile</label>
-          <label><input type="radio" name="difficulty" value="moyen" /> Moyen</label>
-          <label><input type="radio" name="difficulty" value="difficile" /> +</label>
-        </fieldset>
-        <fieldset>
-          <legend>Accessibilité</legend>
-          <label><input type="checkbox" id="largeTextToggle" /> Très grand texte</label>
-          <label><input type="checkbox" id="mouseOnlyToggle" /> Mode souris uniquement</label>
-          <label><input type="checkbox" id="darkModeToggle" /> Mode nuit</label>
-        </fieldset>
-        <fieldset>
-          <legend>Audio</legend>
-          <button type="button" id="audioToggle" aria-pressed="false" aria-label="Activer ou désactiver le son">Son : Off</button>
-          <label for="volumeRange">Volume</label>
-          <input type="range" id="volumeRange" min="0" max="1" step="0.05" value="0.5" />
-        </fieldset>
-        <button type="submit" class="btn primary">Sauvegarder</button>
-        <button type="button" id="settingsBackBtn" class="btn secondary">Retour</button>
-      </form>
-    </section>
+            <article id="game2-card" class="game-card" tabindex="0" role="button" aria-pressed="false" aria-label="Défi 2 Reformulation">
+                <div class="card-image" aria-hidden="true"></div>
+                <div class="card-content">
+                    <h3>Défi 2 — Reformulation</h3>
+                    <p>Choisis la meilleure reformulation / synonyme.</p>
+                </div>
+            </article>
 
-    <!-- Épreuve -->
-    <section id="game" class="screen" role="main" aria-label="Épreuve en cours" aria-live="assertive" aria-atomic="true">
-      <header>
-        <h2 id="game-title"></h2>
-        <div id="game-info" aria-live="polite" aria-atomic="true">
-          <span id="question-counter"></span> | <span id="score-display"></span> | <span id="timer-display"></span>
-        </div>
-      </header>
-      <main id="game-content" tabindex="0"></main>
-      <nav id="game-controls">
-        <button id="pause-btn" class="btn secondary" aria-label="Pause">Pause</button>
-        <button id="quit-btn" class="btn secondary" aria-label="Quitter l’épreuve">Quitter</button>
-      </nav>
-    </section>
+            <article id="game3-card" class="game-card" tabindex="0" role="button" aria-pressed="false" aria-label="Défi 3 Mémoire">
+                <div class="card-image" aria-hidden="true"></div>
+                <div class="card-content">
+                    <h3>Défi 3 — Mémoire de phrases</h3>
+                    <p>Lis puis reproduis la phrase.</p>
+                </div>
+            </article>
 
-    <!-- Pause -->
-    <section id="pause-screen" class="screen" role="dialog" aria-modal="true" aria-labelledby="pause-title" hidden>
-      <h2 id="pause-title">Pause</h2>
-      <button id="resume-btn" class="btn primary">Reprendre</button>
-      <button id="quit-from-pause-btn" class="btn secondary">Quitter</button>
-    </section>
+            <article id="game4-card" class="game-card" tabindex="0" role="button" aria-pressed="false" aria-label="Défi 4 Articulation">
+                <div class="card-image" aria-hidden="true"></div>
+                <div class="card-content">
+                    <h3>Défi 4 — Articulation</h3>
+                    <p>Lis rapidement à voix haute (exercices d'articulation).</p>
+                </div>
+            </article>
+        </main>
 
-    <!-- Fin de session -->
-    <section id="end-screen" class="screen" role="main" aria-label="Fin de la session">
-      <h2>Session terminée</h2>
-      <p id="final-score"></p>
-      <p id="final-feedback"></p>
-      <button id="replay-btn" class="btn primary">Rejouer 10 questions</button>
-      <button id="back-to-menu-btn" class="btn secondary">Retour au menu</button>
-    </section>
+        <section id="game-zone" class="hidden" aria-live="polite" aria-atomic="true">
+            <button id="back-button" class="btn btn-back" aria-label="Retour">← Retour</button>
+            <div id="game-content" class="game-inner"></div>
+            <div id="score-display" class="score-display" aria-live="polite"></div>
+        </section>
+    </div>
 
-    <!-- Tableau de bord -->
-    <section id="dashboard" class="screen" role="main" aria-label="Tableau de bord de Claude">
-      <h2>Tableau de bord de Claude</h2>
-      <div id="dashboard-content" tabindex="0"></div>
-      <button id="dashboard-back-btn" class="btn secondary">Retour</button>
-    </section>
-
-    <!-- À propos -->
-    <section id="about" class="screen" role="main" aria-label="À propos du jeu">
-      <h2>À propos</h2>
-      <p>Bienvenue dans <strong>Le Labo d’Ortho de Claude</strong>, un jeu conçu pour entraîner doucement le langage, la mémoire et l’attention.</p>
-      <p>Ce jeu propose 4 épreuves variées, avec un ton chaleureux et bienveillant, sans stigmatisation.</p>
-      <p>Il intègre des références culturelles respectueuses, notamment autour de la famille et de la culture juive, sans politique ni stéréotypes.</p>
-      <h3>Méthode</h3>
-      <p>Le jeu travaille plusieurs fonctions cognitives : lexique, syntaxe, mémoire de travail, attention, fluidité de lecture. Il est conçu pour être progressif et encourageant.</p>
-      <p>Il ne remplace en aucun cas un professionnel de santé.</p>
-      <h3>Conseils d’utilisation</h3>
-      <ul>
-        <li>Choisissez un moment calme et confortable.</li>
-        <li>Privilégiez une session courte et régulière.</li>
-        <li>Utilisez les paramètres pour adapter le jeu à vos besoins.</li>
-        <li>Amusez-vous et soyez indulgent avec vous-même.</li>
-      </ul>
-      <button id="about-back-btn" class="btn secondary">Retour</button>
-    </section>
-  </div>
-
-  <script src="data.js"></script>
-  <script src="app.js"></script>
+    <script src="data.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
