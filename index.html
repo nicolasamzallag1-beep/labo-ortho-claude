@@ -17,7 +17,6 @@
     </div>
 
     <div class="controls">
-      <button id="btn-settings" class="btn icon" title="Paramètres" aria-label="Paramètres">⚙️</button>
       <button id="btn-ambient-toggle" class="btn icon" title="Activer / désactiver le fond sonore" aria-label="Ambiance">🔊</button>
     </div>
   </header>
@@ -89,39 +88,6 @@
     </div>
   </div>
 
-  <!-- Paramètres -->
-  <div id="settings-modal" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="modal-card small">
-      <header class="modal-head">
-        <h3>Paramètres</h3>
-        <button id="btn-settings-close" class="btn icon" aria-label="Fermer paramètres">✖️</button>
-      </header>
-      <main class="modal-body">
-        <label class="row">
-          <span>Voix (lecture) :</span>
-          <select id="voice-select" class="input"></select>
-        </label>
-        <label class="row">
-          <span>Volume bruitages :</span>
-          <input id="sfx-volume" type="range" min="0" max="1" step="0.05" value="0.6"/>
-        </label>
-        <label class="row">
-          <span>Volume ambiance :</span>
-          <input id="ambient-volume" type="range" min="0" max="1" step="0.05" value="0.25"/>
-        </label>
-        <label class="row">
-          <span>Lecture automatique :</span>
-          <input id="auto-read" type="checkbox" />
-        </label>
-        <p class="muted">Les réglages sont sauvegardés localement.</p>
-      </main>
-      <footer class="modal-foot">
-        <button id="btn-save-settings" class="btn primary">Enregistrer</button>
-      </footer>
-    </div>
-  </div>
-
-  <!-- Data & Script -->
   <script src="data.js"></script>
   <script src="app.js"></script>
 </body>
