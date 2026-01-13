@@ -3,26 +3,50 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Le Labo d’Ortho de Claude</title>
-  <link rel="stylesheet" href="./styles.css" />
+  <title>Labo Ortho — Quiz</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
+
 <body>
+  <main class="app">
+    <header class="top">
+      <div class="brand">
+        <div class="dot"></div>
+        <h1>Labo Ortho</h1>
+      </div>
 
-<header class="topbar">
-  <h1>🧠 Le Labo d’Ortho de Claude</h1>
-  <p>Jeu d’entraînement ludique – créé par Nicolas</p>
-</header>
+      <div class="stats">
+        <div class="pill">Score : <span id="score">0</span></div>
+        <div class="pill"><span id="progress">0</span>/<span id="total">0</span></div>
+      </div>
+    </header>
 
-<main id="app"></main>
+    <section class="card">
+      <div class="qwrap">
+        <h2 id="question">Chargement…</h2>
+        <img id="photo" alt="" />
+      </div>
 
-<footer>
-  <p>
-    Jeu ludique d’entraînement linguistique.  
-    Ne remplace pas l’avis d’un professionnel de santé.
-  </p>
-</footer>
+      <div id="answers" class="answers"></div>
 
-<script src="./data.js"></script>
-<script src="./app.js"></script>
+      <div class="actions">
+        <button id="btnNext" class="btn" disabled>Question suivante</button>
+        <button id="btnRestart" class="btn ghost">Rejouer</button>
+      </div>
+
+      <div class="audioRow">
+        <button id="btnMusic" class="btn ghost">🎵 Musique : OFF</button>
+        <small class="hint">Astuce : clique une fois sur la page pour autoriser l’audio.</small>
+      </div>
+    </section>
+
+    <footer class="foot">
+      <small>GitHub Pages — version statique</small>
+    </footer>
+  </main>
+
+  <!-- IMPORTANT : data.js AVANT app.js -->
+  <script src="data.js"></script>
+  <script src="app.js" defer></script>
 </body>
 </html>
