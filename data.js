@@ -1,340 +1,373 @@
-/* data.js
-   Banques + générateurs (200 items / épreuve) avec seed stable.
-   Pas de dépendances externes.
-*/
+// data.js
+// Banques de mots, phrases, templates, générateurs avec seed stable
 
-(() => {
-  // -------- Seeded random (stable) --------
-  function xmur3(str){
-    let h = 1779033703 ^ str.length;
-    for (let i = 0; i < str.length; i++){
-      h = Math.imul(h ^ str.charCodeAt(i), 3432918353);
-      h = (h << 13) | (h >>> 19);
-    }
-    return function(){
-      h = Math.imul(h ^ (h >>> 16), 2246822507);
-      h = Math.imul(h ^ (h >>> 13), 3266489909);
-      h ^= (h >>> 16);
-      return h >>> 0;
-    };
-  }
+const SEED_BASE = 123456; // seed de base pour stabilité
 
-  function mulberry32(a){
-    return function(){
-      let t = a += 0x6D2B79F5;
-      t = Math.imul(t ^ (t >>> 15), t | 1);
-      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-    };
-  }
-
-  function seededRandom(seedStr){
-    const seedFn = xmur3(seedStr);
-    return mulberry32(seedFn());
-  }
-
-  function pick(rng, arr){ return arr[Math.floor(rng() * arr.length)]; }
-  function shuffle(rng, arr){
-    const a = arr.slice();
-    for (let i = a.length - 1; i > 0; i--){
-      const j = Math.floor(rng() * (i + 1));
-      [a[i], a[j]] = [a[j], a[i]];
-    }
-    return a;
-  }
-
-  // -------- Content banks (FR, léger, pro) --------
-  const names = { claude: "Claude", nicolas: "Nicolas", anita: "Anita" };
-
-  const culture = {
-    foods: ["falafel", "houmous", "chakchouka", "pita", "salade israélienne"],
-    places: ["Jérusalem", "Tel Aviv", "Haïfa"],
-    moments: ["Shabbat", "Hanouka", "Pourim"],
-    words: ["shalom", "todah", "boker tov"]
+// Seeded random generator (Mulberry32)
+function seededRandom(seed) {
+  return function () {
+    let t = (seed += 0x6d2b79f5);
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
+}
 
-  const connectors = ["donc", "car", "mais", "pourtant", "ainsi", "alors", "ensuite"];
-  const preps = ["à", "de", "avec", "sans", "pour", "dans", "sur"];
-  const verbs = ["prépare", "regarde", "écoute", "range", "choisit", "dépose", "prend", "ouvre", "ferme"];
-  const verbs2 = ["répond", "avance", "respire", "sourit", "explique", "continue", "essaie", "réussit"];
-  const nouns = ["le livre", "la tasse", "le journal", "la clé", "le téléphone", "la musique", "le carnet", "la photo"];
-  const adjectives = ["calme", "clair", "simple", "utile", "agréable", "rapide", "précis", "sympa"];
-  const times = ["ce matin", "cet après-midi", "ce soir", "dimanche", "hier", "aujourd’hui"];
-  const places = ["à la maison", "dans la cuisine", "au salon", "dans le jardin", "près de la fenêtre"];
-
-  // Cloze templates (texte à trous) : 4 options, 1 bonne + mini explication
-  function genCloze(rng, diff){
-    // diff: easy/medium/plus -> on joue sur subtilité
-    const personalized = rng() < 0.25;
-    const cultural = rng() < 0.18;
-
-    let sentence = "";
-    let answer = "";
-    let options = [];
-    let explain = "";
-
-    if (diff === "easy") {
-      // connecteurs logiques simples
-      const a = pick(rng, connectors);
-      const wrong = shuffle(rng, connectors.filter(x => x !== a)).slice(0,3);
-      options = shuffle(rng, [a, ...wrong]);
-
-      const subj = personalized ? names.claude : "Il";
-      const v = pick(rng, verbs2);
-      const adv = pick(rng, ["tranquillement", "avec soin", "avec attention", "sans se presser"]);
-      sentence = `${subj} prend son temps, ___ ${subj.toLowerCase() === "il" ? "il" : "il"} ${v} ${adv}.`;
-      answer = a;
-      explain = `“${a}” relie deux idées : il explique la logique entre les deux parties de la phrase.`;
-    } else if (diff === "medium") {
-      // prépositions usuelles
-      const prep = pick(rng, preps);
-      const wrong = shuffle(rng, preps.filter(x => x !== prep)).slice(0,3);
-      options = shuffle(rng, [prep, ...wrong]);
-
-      const n = pick(rng, nouns);
-      const pl = pick(rng, places);
-      sentence = `${personalized ? names.nicolas : "On"} pose ${n} ___ la table ${pl}.`;
-      answer = prep;
-      explain = `La préposition “${prep}” indique le bon lien entre l’action et le lieu.`;
-    } else {
-      // accord / déterminant simple
-      const detOK = pick(rng, ["un", "le", "ce"]);
-      const wrong = shuffle(rng, ["une", "la", "cette", "des", "du"].filter(x => x !== detOK)).slice(0,3);
-      options = shuffle(rng, [detOK, ...wrong]);
-
-      const adj = pick(rng, adjectives);
-      const n = pick(rng, ["moment", "exercice", "petit défi", "jeu"]);
-      sentence = `C’est ___ ${n} ${adj} pour ${personalized ? names.claude : "toi"}.`;
-      answer = detOK;
-      explain = `“${detOK}” s’accorde correctement avec “${n}”.`;
-    }
-
-    if (cultural) {
-      // petite touche neutre
-      const food = pick(rng, culture.foods);
-      sentence = sentence.replace(".", `, comme un ${food} bien préparé.`); // sympa, neutre
-      explain += ` Petit clin d’œil : on avance étape par étape, comme une bonne recette.`;
-    }
-
-    return {
-      type: "cloze",
-      text: sentence,
-      blank: "___",
-      options,
-      answerIndex: options.indexOf(answer),
-      explain,
-      image: "assets/family1.jpeg"
-    };
+// Utilitaire shuffle stable
+function shuffleArray(array, rand) {
+  const arr = array.slice();
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(rand() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
   }
+  return arr;
+}
 
-  // Synonymes / reformulation
-  const synPairs = [
-    ["rapide", ["vite", "prompt", "accéléré"]],
-    ["calme", ["paisible", "tranquille", "posé"]],
-    ["content", ["heureux", "joyeux", "ravi"]],
-    ["fatigué", ["lassé", "épuisé", "crevé"]],
-    ["simple", ["facile", "clair", "sans complication"]],
-    ["commencer", ["débuter", "entamer", "se lancer"]],
-    ["regarder", ["observer", "viser", "examiner"]],
-    ["répondre", ["répliquer", "dire", "réagir"]],
-  ];
+// Données personnalisées
+const playerName = "Claude";
+const familyNames = ["Nicolas", "Anita"];
+const jewishRefs = [
+  "Shabbat",
+  "Hanouka",
+  "Jérusalem",
+  "Tel Aviv",
+  "falafel",
+  "menorah",
+  "kippa",
+  "talmud",
+  "haggadah",
+];
 
-  function genSyn(rng, diff){
-    const mode = rng() < 0.55 ? "syn" : "reform";
-    const personalized = rng() < 0.22;
-    const cultural = rng() < 0.15;
+// Épreuve 1 - Texte à trous
+const epreuve1Templates = [
+  {
+    phrase: "Ce matin, {name} a préparé un délicieux {food} pour {family}.",
+    blanks: ["food"],
+    options: {
+      food: ["falafel", "baguette", "croissant", "sushi"],
+    },
+    explanations: {
+      falafel: "Le falafel est un plat traditionnel souvent apprécié dans la culture israélienne.",
+      baguette: "La baguette est un pain français, moins lié à la culture mentionnée.",
+      croissant: "Le croissant est une pâtisserie française, pas typique ici.",
+      sushi: "Le sushi est japonais, hors contexte.",
+    },
+  },
+  {
+    phrase: "{name} et {family} vont à {place} pour célébrer {holiday}.",
+    blanks: ["place", "holiday"],
+    options: {
+      place: ["Jérusalem", "Paris", "Londres", "New York"],
+      holiday: ["Hanouka", "Noël", "Pâques", "Halloween"],
+    },
+    explanations: {
+      Jérusalem: "Jérusalem est une ville importante dans la culture juive.",
+      Paris: "Paris est une grande ville, mais pas liée à la fête mentionnée.",
+      Londres: "Londres est une ville, mais pas liée ici.",
+      New York: "New York est une ville, mais pas liée ici.",
+      Hanouka: "Hanouka est une fête juive célébrée avec joie.",
+      Noël: "Noël est une fête chrétienne, différente ici.",
+      Pâques: "Pâques est une fête chrétienne.",
+      Halloween: "Halloween est une fête populaire mais pas liée ici.",
+    },
+  },
+  {
+    phrase: "Le {object} de {name} est posé sur la {place}.",
+    blanks: ["object", "place"],
+    options: {
+      object: ["menorah", "lampe", "livre", "téléphone"],
+      place: ["table", "chaise", "étagère", "fenêtre"],
+    },
+    explanations: {
+      menorah: "La menorah est un chandelier traditionnel juif.",
+      lampe: "Une lampe éclaire la pièce, mais ce n’est pas l’objet culturel.",
+      livre: "Un livre peut être posé, mais ici on parle d’un objet spécial.",
+      téléphone: "Un téléphone est courant, mais pas culturel.",
+      table: "La table est un meuble commun.",
+      chaise: "La chaise est un meuble pour s’asseoir.",
+      étagère: "L’étagère sert à ranger des objets.",
+      fenêtre: "La fenêtre donne sur l’extérieur.",
+    },
+  },
+  {
+    phrase: "{name} aime lire le {book} pendant le {holiday}.",
+    blanks: ["book", "holiday"],
+    options: {
+      book: ["talmud", "roman", "journal", "magazine"],
+      holiday: ["Shabbat", "week-end", "vacances", "Hanouka"],
+    },
+    explanations: {
+      talmud: "Le Talmud est un texte sacré du judaïsme.",
+      roman: "Un roman est un livre de fiction.",
+      journal: "Le journal donne les nouvelles.",
+      magazine: "Le magazine traite de divers sujets.",
+      Shabbat: "Le Shabbat est un jour de repos sacré.",
+      week-end: "Le week-end est un moment de repos général.",
+      vacances: "Les vacances sont une période de détente.",
+      Hanouka: "Hanouka est une fête joyeuse.",
+    },
+  },
+  {
+    phrase: "Anita prépare un plat de {food} pour {name} et {family}.",
+    blanks: ["food", "family"],
+    options: {
+      food: ["falafel", "pâtes", "salade", "soupe"],
+      family: ["Nicolas", "Claude", "Anita", "Nicolas et Claude"],
+    },
+    explanations: {
+      falafel: "Le falafel est un plat populaire en Israël.",
+      pâtes: "Les pâtes sont un plat italien apprécié.",
+      salade: "La salade est un plat léger et sain.",
+      soupe: "La soupe est un plat chaud et réconfortant.",
+      Nicolas: "Nicolas est le fils de Claude.",
+      Claude: "Claude est le joueur principal.",
+      Anita: "Anita est la maman.",
+      "Nicolas et Claude": "Nicolas et Claude sont la famille proche.",
+    },
+  },
+];
 
-    if (mode === "syn") {
-      const [base, list] = pick(rng, synPairs);
-      const good = pick(rng, list);
-      let distractors = [];
-      if (diff === "easy") {
-        distractors = shuffle(rng, ["lentement", "bruyant", "loin", "bizarre", "sec"].filter(x => x !== good)).slice(0,3);
-      } else if (diff === "medium") {
-        distractors = shuffle(rng, ["pressé", "mou", "parfois", "rarement", "léger"].filter(x => x !== good)).slice(0,3);
-      } else {
-        distractors = shuffle(rng, ["hâtif", "constant", "dense", "prudent", "flou"].filter(x => x !== good)).slice(0,3);
-      }
-      const options = shuffle(rng, [good, ...distractors]);
+// Épreuve 2 - Reformulation / Synonymes
+const epreuve2Synonymes = [
+  { word: "heureux", options: ["content", "triste", "fatigué", "fâché"], correct: "content", note: "Content est un synonyme proche d’heureux." },
+  { word: "rapide", options: ["lent", "vite", "calme", "fort"], correct: "vite", note: "Vite est un synonyme courant de rapide." },
+  { word: "grand", options: ["petit", "énorme", "haut", "large"], correct: "énorme", note: "Énorme est un synonyme de grand." },
+  { word: "manger", options: ["boire", "dévorer", "cuisiner", "dormir"], correct: "dévorer", note: "Dévorer est un synonyme fort de manger." },
+  { word: "dire", options: ["parler", "écouter", "voir", "entendre"], correct: "parler", note: "Parler est proche de dire." },
+  { word: "joli", options: ["beau", "laid", "moche", "sale"], correct: "beau", note: "Beau est un synonyme de joli." },
+  { word: "travailler", options: ["jouer", "bosser", "dormir", "manger"], correct: "bosser", note: "Bosser est un synonyme familier de travailler." },
+  { word: "content", options: ["heureux", "fâché", "fatigué", "triste"], correct: "heureux", note: "Heureux est un synonyme de content." },
+  { word: "marcher", options: ["courir", "avancer", "sauter", "voler"], correct: "avancer", note: "Avancer est proche de marcher." },
+  { word: "regarder", options: ["voir", "écouter", "parler", "sentir"], correct: "voir", note: "Voir est un synonyme proche de regarder." },
+];
 
-      const who = personalized ? names.claude : "On";
-      let text = `Choisis le synonyme le plus proche de “${base}”.`;
-      let note = `“${good}” a un sens très proche de “${base}”.`;
+// Reformulations (phrases)
+const epreuve2Reformulations = [
+  {
+    phrase: "Claude aime lire des livres le soir.",
+    options: [
+      "Le soir, Claude aime lire des livres.",
+      "Claude déteste lire des livres le soir.",
+      "Claude lit rarement des livres le soir.",
+    ],
+    correct: 0,
+    note: "La première reformulation garde le même sens et style simple.",
+  },
+  {
+    phrase: "Anita prépare un bon repas pour Nicolas.",
+    options: [
+      "Nicolas prépare un bon repas pour Anita.",
+      "Anita cuisine un délicieux repas pour Nicolas.",
+      "Anita ne prépare pas de repas.",
+    ],
+    correct: 1,
+    note: "La deuxième reformulation est la meilleure, même sens et style simple.",
+  },
+  {
+    phrase: "Le chat dort sur le canapé.",
+    options: [
+      "Le chat est réveillé sur le canapé.",
+      "Le chat se repose sur le canapé.",
+      "Le chien dort sur le canapé.",
+    ],
+    correct: 1,
+    note: "La deuxième reformulation est proche en sens et style.",
+  },
+  {
+    phrase: "Nicolas aime écouter de la musique.",
+    options: [
+      "Nicolas déteste la musique.",
+      "Nicolas apprécie écouter de la musique.",
+      "Nicolas joue de la musique.",
+    ],
+    correct: 1,
+    note: "La deuxième reformulation est la meilleure.",
+  },
+  {
+    phrase: "Claude marche dans le parc chaque matin.",
+    options: [
+      "Chaque matin, Claude se promène dans le parc.",
+      "Claude ne va jamais au parc.",
+      "Claude court dans le parc chaque matin.",
+    ],
+    correct: 0,
+    note: "La première reformulation garde le sens et style simple.",
+  },
+];
 
-      if (cultural) {
-        const w = pick(rng, culture.words);
-        text = `${who} dit “${w}”. ${text}`;
-        note += ` Petit mot du jour : “${w}” est un salut chaleureux.`;
-      }
+// Épreuve 3 - Mémoire de phrases
+const epreuve3Phrases = [
+  "Claude aime les promenades dans le parc.",
+  "Anita prépare un gâteau pour Nicolas.",
+  "Le soleil brille sur Jérusalem aujourd’hui.",
+  "Hanouka est une fête pleine de lumière.",
+  "Le falafel est un plat délicieux et croustillant.",
+  "Nicolas lit un livre intéressant chaque soir.",
+  "La menorah est allumée pendant huit jours.",
+  "Claude et Anita chantent ensemble une chanson.",
+  "Le talmud contient des enseignements anciens.",
+  "Tel Aviv est une ville dynamique et moderne.",
+];
 
-      return {
-        type: "syn",
-        text,
-        options,
-        answerIndex: options.indexOf(good),
-        explain: note,
-        image: "assets/family2.jpeg"
+// Épreuve 4 - Vitesse & articulation (virelangues)
+const epreuve4Virelangues = [
+  {
+    phrase: "Claude, champion du virelangue, choisit ses chapeaux chauds.",
+    question: {
+      q: "Que choisit Claude ?",
+      options: ["Des chapeaux chauds", "Des chaussures froides", "Des chemises légères", "Des chapeaux froids"],
+      correct: 0,
+    },
+  },
+  {
+    phrase: "Anita aime les ananas et les avocats au marché.",
+    question: {
+      q: "Qu’est-ce qu’Anita aime ?",
+      options: ["Ananas et avocats", "Pommes et poires", "Bananes et cerises", "Raisins et fraises"],
+      correct: 0,
+    },
+  },
+  {
+    phrase: "Nicolas nettoie neuf niches noires rapidement.",
+    question: {
+      q: "Combien de niches nettoie Nicolas ?",
+      options: ["Neuf", "Huit", "Dix", "Sept"],
+      correct: 0,
+    },
+  },
+  {
+    phrase: "Le lapin lit lentement la lettre de Léa.",
+    question: {
+      q: "Qui lit la lettre ?",
+      options: ["Le lapin", "Léa", "Le lion", "Le loup"],
+      correct: 0,
+    },
+  },
+  {
+    phrase: "Claude cueille cinq coquelicots colorés au coin du chemin.",
+    question: {
+      q: "Combien de coquelicots cueille Claude ?",
+      options: ["Cinq", "Quatre", "Six", "Sept"],
+      correct: 0,
+    },
+  },
+];
+
+// Générateur d’items pour chaque épreuve
+
+function generateEpreuve1Items(seed) {
+  const rand = seededRandom(seed);
+  const items = [];
+  const templates = epreuve1Templates;
+  for (let i = 0; i < 200; i++) {
+    const tpl = templates[i % templates.length];
+    // Pour chaque blank, choisir une bonne réponse + 3 distracteurs
+    const blanks = tpl.blanks;
+    const chosenAnswers = {};
+    blanks.forEach((blank) => {
+      const opts = tpl.options[blank];
+      const correctIndex = Math.floor(rand() * opts.length);
+      chosenAnswers[blank] = opts[correctIndex];
+    });
+    // Construire phrase avec trous
+    let phrase = tpl.phrase;
+    blanks.forEach((blank) => {
+      phrase = phrase.replace(`{${blank}}`, "_____");
+    });
+    // Pour chaque blank, générer 4 propositions (1 correcte + 3 autres)
+    const optionsByBlank = {};
+    blanks.forEach((blank) => {
+      const opts = tpl.options[blank];
+      const correct = chosenAnswers[blank];
+      // Distracteurs = autres options sans la bonne
+      const distractors = opts.filter((o) => o !== correct);
+      const shuffledDistractors = shuffleArray(distractors, rand).slice(0, 3);
+      const allOpts = shuffleArray([correct, ...shuffledDistractors], rand);
+      optionsByBlank[blank] = {
+        correct,
+        options: allOpts,
+        explanation: tpl.explanations[correct],
       };
-    }
-
-    // Reformulation : 1 phrase + 3 reformulations dont 1 équivalente
-    const subj = personalized ? names.nicolas : "Quelqu’un";
-    const v = pick(rng, verbs2);
-    const adv = pick(rng, ["avec attention", "tranquillement", "sans se presser"]);
-    const base = `${subj} ${v} ${adv}.`;
-
-    const good = diff === "plus"
-      ? `${subj} continue calmement, avec attention.`
-      : `${subj} ${v} calmement.`;
-
-    const bad1 = `${subj} s’arrête et oublie tout.`;
-    const bad2 = `${subj} fait l’inverse sans réfléchir.`;
-    const bad3 = `${subj} ${v} très vite et sans attention.`;
-
-    const options = shuffle(rng, [good, bad1, bad2, bad3]);
-
-    return {
-      type: "reform",
-      text: `Choisis la reformulation qui garde le même sens :\n“${base}”`,
-      options,
-      answerIndex: options.indexOf(good),
-      explain: `La meilleure reformulation garde l’idée principale (action + manière), sans changer le sens.`,
-      image: "assets/family2.jpeg"
-    };
+    });
+    items.push({
+      phrase,
+      blanks,
+      optionsByBlank,
+      chosenAnswers,
+    });
   }
+  return items;
+}
 
-  // Mémoire : phrase affichée 6–10s puis reconstruire en cliquant les mots dans l’ordre
-  const memStarters = [
-    "Ce matin,",
-    "Aujourd’hui,",
-    "Avec le sourire,",
-    "Tranquillement,",
-    "Sans se presser,"
-  ];
-  const memTemplates = [
-    (rng) => `${pick(rng, memStarters)} ${names.claude} regarde ${pick(rng, nouns)} ${pick(rng, places)}.`,
-    (rng) => `${pick(rng, memStarters)} ${names.anita} prépare ${pick(rng, ["un thé", "un café", "un goûter", "un petit repas"])} pour ${names.claude}.`,
-    (rng) => `${pick(rng, memStarters)} ${names.nicolas} envoie une photo et ${names.claude} sourit.`,
-    (rng) => `${pick(rng, memStarters)} on avance pas à pas, et c’est très bien comme ça.`,
-  ];
-
-  function genMemory(rng, diff){
-    const base = pick(rng, memTemplates)(rng);
-
-    let seconds = 8;
-    if (diff === "easy") seconds = 10;
-    if (diff === "medium") seconds = 8;
-    if (diff === "plus") seconds = 6;
-
-    // Petite touche culturelle neutre parfois
-    let phrase = base;
-    if (rng() < 0.18) {
-      const moment = pick(rng, culture.moments);
-      phrase = `${base} ${moment} est un bon moment pour se poser.`;
+function generateEpreuve2Items(seed) {
+  const rand = seededRandom(seed);
+  const items = [];
+  // Mélanger synonymes et reformulations
+  const totalSyn = epreuve2Synonymes.length;
+  const totalRef = epreuve2Reformulations.length;
+  for (let i = 0; i < 200; i++) {
+    if (i % 2 === 0) {
+      // Synonyme
+      const syn = epreuve2Synonymes[i % totalSyn];
+      const opts = shuffleArray(syn.options, rand);
+      items.push({
+        type: "synonyme",
+        word: syn.word,
+        options: opts,
+        correct: syn.correct,
+        note: syn.note,
+      });
+    } else {
+      // Reformulation
+      const ref = epreuve2Reformulations[i % totalRef];
+      const opts = shuffleArray(ref.options, rand);
+      const correctIndex = opts.indexOf(ref.options[ref.correct]);
+      items.push({
+        type: "reformulation",
+        phrase: ref.phrase,
+        options: opts,
+        correct: correctIndex,
+        note: ref.note,
+      });
     }
+  }
+  return items;
+}
 
-    const clean = phrase
-      .replace(/[“”"]/g, "")
-      .replace(/\s+/g, " ")
-      .trim();
-
-    // Mots : on conserve ponctuation simple en fin de mot
-    const words = clean.split(" ");
-
-    return {
-      type: "memory",
-      text: clean,
+function generateEpreuve3Items(seed) {
+  const rand = seededRandom(seed);
+  const items = [];
+  const phrases = epreuve3Phrases;
+  for (let i = 0; i < 200; i++) {
+    const phrase = phrases[i % phrases.length];
+    // Découper en mots
+    const words = phrase.split(" ");
+    // Shuffle mots pour affichage désordonné
+    const shuffledWords = shuffleArray(words, rand);
+    items.push({
+      phrase,
       words,
-      seconds,
-      image: "assets/family3.jpeg"
-    };
+      shuffledWords,
+    });
   }
+  return items;
+}
 
-  // Articulation : virelangue + auto-éval + petite question d’attention
-  const tongueTwisters = [
-    "Les chaussettes de l’archiduchesse sont-elles sèches, archi-sèches ?",
-    "Un chasseur sachant chasser doit savoir chasser sans son chien.",
-    "Je veux et j’exige d’exquises excuses.",
-    "Cinq chiens chassent six chats.",
-    "Si ces six scies scient ces six cyprès, ces six scies scient aussi ces six pins."
-  ];
-  const simpleComprehension = [
-    { q: "De quoi parle la phrase ?", a: "chaussettes", opts: ["chaussures","chaussettes","voitures","bananes"] },
-    { q: "Combien de chiens ?", a: "cinq", opts: ["cinq","deux","neuf","un"] },
-    { q: "Que doit savoir faire le chasseur ?", a: "chasser", opts: ["dormir","cuisiner","chasser","chanter"] },
-  ];
-
-  function genSpeech(rng, diff){
-    const tw = pick(rng, tongueTwisters);
-    const comp = pick(rng, simpleComprehension);
-
-    // Variation douce selon difficulté : phrase additionnelle courte
-    let extra = "";
-    if (diff === "plus" && rng() < 0.6) {
-      extra = ` Puis lis aussi : “${pick(rng, ["Claude lit clairement.", "On articule doucement.", "On respire et on recommence."])}”`;
-    }
-
-    return {
-      type: "speech",
-      text: tw + extra,
-      compQ: comp.q,
-      options: comp.opts,
-      answerIndex: comp.opts.indexOf(comp.a),
-      image: "assets/family4.jpeg"
-    };
+function generateEpreuve4Items(seed) {
+  const rand = seededRandom(seed);
+  const items = [];
+  const virelangues = epreuve4Virelangues;
+  for (let i = 0; i < 200; i++) {
+    const item = virelangues[i % virelangues.length];
+    items.push(item);
   }
+  return items;
+}
 
-  // -------- Public API --------
-  const GAMES = {
-    cloze: {
-      id: "cloze",
-      name: "Texte à trous",
-      desc: "Complète une phrase avec le bon mot. QCM 4 choix + explication.",
-      make200(seed, diff){
-        const rng = seededRandom(seed);
-        const items = [];
-        for (let i=0;i<200;i++) items.push(genCloze(rng, diff));
-        return items;
-      }
-    },
-    syn: {
-      id: "syn",
-      name: "Reformulation / Synonymes",
-      desc: "Choisis la meilleure reformulation ou le synonyme le plus proche.",
-      make200(seed, diff){
-        const rng = seededRandom(seed);
-        const items = [];
-        for (let i=0;i<200;i++) items.push(genSyn(rng, diff));
-        return items;
-      }
-    },
-    memory: {
-      id: "memory",
-      name: "Mémoire de phrases",
-      desc: "Lis une phrase 6–10 secondes puis clique les mots dans le bon ordre.",
-      make200(seed, diff){
-        const rng = seededRandom(seed);
-        const items = [];
-        for (let i=0;i<200;i++) items.push(genMemory(rng, diff));
-        return items;
-      }
-    },
-    speech: {
-      id: "speech",
-      name: "Vitesse & articulation",
-      desc: "Virelangue + chrono doux + auto-évaluation + question d’attention.",
-      make200(seed, diff){
-        const rng = seededRandom(seed);
-        const items = [];
-        for (let i=0;i<200;i++) items.push(genSpeech(rng, diff));
-        return items;
-      }
-    }
-  };
-
-  window.LABO = {
-    GAMES,
-    seededRandom,
-    shuffle
-  };
-})();
+// Export
+const generators = {
+  1: generateEpreuve1Items,
+  2: generateEpreuve2Items,
+  3: generateEpreuve3Items,
+  4: generateEpreuve4Items,
+};
