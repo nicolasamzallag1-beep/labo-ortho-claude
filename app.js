@@ -1,179 +1,252 @@
+// app.js
 (() => {
   const $ = (id) => document.getElementById(id);
 
+  // Screens
+  const screenHome = $("screenHome");
+  const screenGame = $("screenGame");
+
+  // Home
+  const btnStart = $("btnStart");
+  const btnMusicHome = $("btnMusicHome");
+
+  // Game UI
   const elQuestion = $("question");
-  const elAnswers  = $("answers");
-  const elScore    = $("score");
+  const elAnswers = $("answers");
+  const elScore = $("score");
   const elProgress = $("progress");
-  const elTotal    = $("total");
-  const elPhoto    = $("photo");
-
-  const btnNext    = $("btnNext");
+  const elTotal = $("total");
+  const btnNext = $("btnNext");
   const btnRestart = $("btnRestart");
-  const btnMusic   = $("btnMusic");
+  const btnBackHome = $("btnBackHome");
+  const btnMusic = $("btnMusic");
+  const imgPhoto = $("photo");
 
-  // --- State ---
-  let questions = [];
-  let index = 0;
+  // Data
+  const QUESTIONS = (window.QUESTIONS || []);
+  let order = [];
+  let idx = 0;
   let score = 0;
   let locked = false;
 
-  // --- Audio (sans fichiers, via WebAudio) ---
-  let audioOn = false;
-  let ctx = null;
-  let osc = null;
-  let gain = null;
+  // --------- Simple Music (WebAudio) ----------
+  let audioCtx = null;
+  let musicOn = false;
+  let musicTimer = null;
 
-  function startMusic(){
-    if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
-    if (ctx.state === "suspended") ctx.resume();
+  function setMusicLabel() {
+    const label = musicOn ? "🎵 Musique : ON" : "🎵 Musique : OFF";
+    btnMusic.textContent = label;
+    btnMusicHome.textContent = label;
+  }
 
-    if (osc) return;
-    osc = ctx.createOscillator();
-    gain = ctx.createGain();
-    osc.type = "sine";
-    osc.frequency.value = 110;        // note grave
-    gain.gain.value = 0.02;           // volume très bas
+  function ensureAudio() {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx.state === "suspended") audioCtx.resume();
+  }
+
+  function playTick(freq, duration = 0.08, type = "sine", gainVal = 0.02) {
+    if (!audioCtx) return;
+    const t = audioCtx.currentTime;
+
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, t);
+
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.exponentialRampToValueAtTime(gainVal, t + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + duration);
 
     osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start();
+    gain.connect(audioCtx.destination);
 
-    audioOn = true;
-    btnMusic.textContent = "🎵 Musique : ON";
+    osc.start(t);
+    osc.stop(t + duration + 0.02);
   }
 
-  function stopMusic(){
-    if (osc) { osc.stop(); osc.disconnect(); osc = null; }
-    if (gain){ gain.disconnect(); gain = null; }
-    audioOn = false;
-    btnMusic.textContent = "🎵 Musique : OFF";
+  function startMusicLoop() {
+    stopMusicLoop();
+    // petit pattern discret
+    let step = 0;
+    musicTimer = setInterval(() => {
+      if (!musicOn) return;
+      try {
+        ensureAudio();
+        const bass = [110, 110, 98, 110, 123, 110, 98, 110];
+        const hat = [1,0,1,0,1,0,1,0];
+        playTick(bass[step % bass.length], 0.09, "sine", 0.018);
+        if (hat[step % hat.length]) playTick(880, 0.03, "square", 0.006);
+        step++;
+      } catch (e) {
+        // si le navigateur refuse encore l'audio, on ne crash pas le jeu
+      }
+    }, 220);
   }
 
-  function blip(ok){
-    if (!ctx) return;
-    const o = ctx.createOscillator();
-    const g = ctx.createGain();
-    o.type = "triangle";
-    o.frequency.value = ok ? 660 : 220;
-    g.gain.value = 0.06;
-
-    o.connect(g); g.connect(ctx.destination);
-    o.start();
-    o.stop(ctx.currentTime + 0.08);
+  function stopMusicLoop() {
+    if (musicTimer) clearInterval(musicTimer);
+    musicTimer = null;
   }
 
-  // --- Utils ---
-  function shuffle(arr){
-    const a = [...arr];
-    for(let i=a.length-1;i>0;i--){
-      const j = Math.floor(Math.random()*(i+1));
-      [a[i], a[j]] = [a[j], a[i]];
-    }
-    return a;
-  }
-
-  function setPhoto(src){
-    if (src){
-      elPhoto.src = src;
-      elPhoto.style.display = "block";
+  function toggleMusic() {
+    musicOn = !musicOn;
+    setMusicLabel();
+    if (musicOn) {
+      ensureAudio();
+      startMusicLoop();
     } else {
-      elPhoto.removeAttribute("src");
-      elPhoto.style.display = "none";
+      stopMusicLoop();
     }
   }
 
-  // --- Render ---
-  function render(){
-    const q = questions[index];
+  // --------- Game logic ----------
+  function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  function initGame() {
+    if (!QUESTIONS.length) {
+      elQuestion.textContent = "Aucune question trouvée dans data.js";
+      elAnswers.innerHTML = "";
+      btnNext.disabled = true;
+      return;
+    }
+
+    order = shuffle([...Array(QUESTIONS.length).keys()]);
+    idx = 0;
+    score = 0;
+    locked = false;
+
+    elTotal.textContent = QUESTIONS.length;
+    elScore.textContent = score;
+    renderQuestion();
+  }
+
+  function renderQuestion() {
     locked = false;
     btnNext.disabled = true;
-
-    elQuestion.textContent = q.question;
-    setPhoto(q.image || "");
-
-    elProgress.textContent = String(index + 1);
-    elTotal.textContent = String(questions.length);
-    elScore.textContent = String(score);
-
     elAnswers.innerHTML = "";
-    q.answers.forEach((txt, i) => {
-      const b = document.createElement("button");
-      b.className = "answer";
-      b.textContent = txt;
-      b.addEventListener("click", () => choose(i, b));
-      elAnswers.appendChild(b);
+
+    const q = QUESTIONS[order[idx]];
+    elQuestion.textContent = q.text;
+
+    // Photo (optionnelle)
+    if (q.photo) {
+      imgPhoto.src = q.photo;
+      imgPhoto.classList.remove("hidden");
+      imgPhoto.alt = "Illustration";
+      // si l'image 404, on la cache au lieu de casser le jeu
+      imgPhoto.onerror = () => {
+        imgPhoto.classList.add("hidden");
+        imgPhoto.removeAttribute("src");
+      };
+    } else {
+      imgPhoto.classList.add("hidden");
+      imgPhoto.removeAttribute("src");
+    }
+
+    elProgress.textContent = (idx + 1);
+
+    q.options.forEach((opt, i) => {
+      const btn = document.createElement("button");
+      btn.className = "answerBtn";
+      btn.textContent = opt;
+      btn.addEventListener("click", () => chooseAnswer(i));
+      elAnswers.appendChild(btn);
     });
   }
 
-  function choose(i, btn){
+  function chooseAnswer(chosenIndex) {
     if (locked) return;
     locked = true;
 
-    const q = questions[index];
-    const buttons = [...elAnswers.querySelectorAll(".answer")];
+    const q = QUESTIONS[order[idx]];
+    const correct = q.answerIndex;
 
-    // lock all
-    buttons.forEach(b => b.disabled = true);
+    const buttons = [...elAnswers.querySelectorAll("button")];
+    buttons.forEach((b, i) => {
+      b.disabled = true;
+      if (i === correct) b.classList.add("correct");
+      if (i === chosenIndex && chosenIndex !== correct) b.classList.add("wrong");
+    });
 
-    // mark
-    const ok = i === q.correctIndex;
-    if (ok) score += 1;
-
-    buttons[q.correctIndex]?.classList.add("good");
-    if (!ok) btn.classList.add("bad");
-
-    elScore.textContent = String(score);
-
-    // sound feedback
-    if (ctx && audioOn) blip(ok);
+    if (chosenIndex === correct) {
+      score += 1;
+      elScore.textContent = score;
+      // petit “ding”
+      try {
+        ensureAudio();
+        playTick(660, 0.08, "sine", 0.02);
+        playTick(990, 0.06, "sine", 0.015);
+      } catch {}
+      alert("✅ Bien joué !");
+    } else {
+      try {
+        ensureAudio();
+        playTick(220, 0.10, "sawtooth", 0.02);
+      } catch {}
+      alert("❌ Raté !");
+    }
 
     btnNext.disabled = false;
-    btnNext.focus();
   }
 
-  function next(){
-    if (index < questions.length - 1){
-      index += 1;
-      render();
+  function nextQuestion() {
+    if (!locked) return; // pas de passage si pas de réponse
+    idx += 1;
+
+    if (idx >= QUESTIONS.length) {
+      // Fin
+      elQuestion.textContent = `🎉 Terminé ! Score final : ${score}/${QUESTIONS.length}`;
+      elAnswers.innerHTML = "";
+      btnNext.disabled = true;
+      imgPhoto.classList.add("hidden");
+      imgPhoto.removeAttribute("src");
       return;
     }
-    // End screen
-    elQuestion.textContent = `Terminé ✅ Score : ${score}/${questions.length}`;
-    setPhoto("");
-    elAnswers.innerHTML = `<div style="color:#94a3b8;line-height:1.5">
-      Tu veux une version <b>plus fun</b> (inventaire, bonus, musique clubbing, photos, etc.) ? 😄
-    </div>`;
-    btnNext.disabled = true;
+
+    renderQuestion();
   }
 
-  function restart(){
-    score = 0;
-    index = 0;
-    questions = shuffle(window.QUESTIONS || []);
-    if (!questions.length){
-      elQuestion.textContent = "Erreur : aucune question trouvée. Vérifie data.js (window.QUESTIONS).";
-      return;
-    }
-    render();
+  function showHome() {
+    screenGame.classList.add("hidden");
+    screenHome.classList.remove("hidden");
   }
 
-  // --- Events ---
-  btnNext.addEventListener("click", next);
-  btnRestart.addEventListener("click", restart);
-  btnMusic.addEventListener("click", () => {
-    // l'audio nécessite un geste utilisateur : c'est OK ici
-    if (!audioOn) startMusic();
-    else stopMusic();
+  function showGame() {
+    screenHome.classList.add("hidden");
+    screenGame.classList.remove("hidden");
+  }
+
+  // Events
+  btnStart.addEventListener("click", () => {
+    showGame();
+    initGame();
   });
 
-  // --- Boot ---
-  window.addEventListener("DOMContentLoaded", () => {
-    questions = shuffle(window.QUESTIONS || []);
-    if (!questions.length){
-      elQuestion.textContent = "Erreur : data.js ne charge pas. Vérifie qu'il est bien au même niveau que index.html.";
-      return;
+  btnRestart.addEventListener("click", () => initGame());
+  btnNext.addEventListener("click", () => nextQuestion());
+  btnBackHome.addEventListener("click", () => showHome());
+
+  btnMusic.addEventListener("click", toggleMusic);
+  btnMusicHome.addEventListener("click", toggleMusic);
+
+  // On essaie d’autoriser l’audio dès le premier clic sur la page (utile iOS/Safari)
+  document.addEventListener("click", () => {
+    if (musicOn) {
+      try { ensureAudio(); } catch {}
     }
-    render();
-  });
+  }, { once: false });
+
+  // Start state
+  setMusicLabel();
+  showHome();
 })();
