@@ -1,21 +1,26 @@
+// data.js
+// Si tu veux une photo par question : mets photo: "family2.jpeg" (ou une autre image présente dans le repo)
+
 window.QUESTIONS = [
   {
-    id: 1,
-    question: "Question 1 — Exemple : quelle est la bonne réponse ?",
-    answers: ["Réponse A", "Réponse B", "Réponse C", "Réponse D"],
-    correctIndex: 1,
-    // optionnel : image: "assets/family1.jpeg"
+    text: "Claude prend son temps, ___ il répond calmement.",
+    options: ["donc", "mais", "hier", "vite"],
+    answerIndex: 0,
+    photo: "family2.jpeg"
   },
   {
-    id: 2,
-    question: "Question 2 — Exemple : on passe bien à la suivante ?",
-    answers: ["Oui", "Non", "Peut-être", "Je ragequit"],
-    correctIndex: 0
+    text: "Il veut sortir, ___ il pleut.",
+    options: ["donc", "mais", "vite", "hier"],
+    answerIndex: 1
   },
   {
-    id: 3,
-    question: "Question 3 — Score + feedback ok ?",
-    answers: ["Carrément", "Bof", "Jamais", "Je veux des paillettes"],
-    correctIndex: 0
+    text: "Je me suis levé ___ matin.",
+    options: ["donc", "mais", "hier", "vite"],
+    answerIndex: 2
+  },
+  {
+    text: "Il parle ___, on ne comprend rien.",
+    options: ["donc", "mais", "hier", "vite"],
+    answerIndex: 3
   }
 ];
