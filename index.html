@@ -7,79 +7,74 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <header class="topbar" role="banner" aria-label="Bannière du jeu">
+  <header class="topbar">
     <div class="brand">
-      <div class="logo" aria-hidden="true">⟡</div>
+      <div class="logo">⟡</div>
       <div>
         <h1>LABO ORTHO — Claude</h1>
         <p class="subtitle">Exercices personnalisés • Ludique • Professionnel</p>
       </div>
     </div>
-
     <div class="controls">
-      <button id="btn-ambient-toggle" class="btn icon" title="Activer / désactiver le fond sonore" aria-label="Ambiance">🔊</button>
+      <button id="btn-ambient-toggle" class="btn icon" title="Son">🔊</button>
     </div>
   </header>
 
-  <main id="main" role="main">
+  <main id="main">
     <section class="intro">
       <h2>Bonjour Claude — Choisis un défi</h2>
-      <p>4 défis progressifs — mémoire, langage, reformulation, articulation.</p>
+      <p>4 défis progressifs pour la mémoire et le langage.</p>
     </section>
 
-    <section class="grid" aria-label="Liste des défis">
-      <article class="card" data-game="1" style="background-image: url('family1.jpeg')">
+    <section class="grid">
+      <article class="card" style="background-image: url('family1.jpeg')">
         <div class="card-body">
           <h3>Défi 1 — Textes à trous</h3>
-          <p>Remplir les blancs : rappel de mots, famille et culture générale.</p>
-          <button class="btn primary start-btn" data-game="1" aria-label="Lancer Défi 1">Jouer</button>
+          <p>Remplir les blancs.</p>
+          <button class="btn primary start-btn" data-game="1">Jouer</button>
         </div>
       </article>
-
-      <article class="card" data-game="2" style="background-image: url('family2.jpeg')">
+      <article class="card" style="background-image: url('family2.jpeg')">
         <div class="card-body">
           <h3>Défi 2 — Reformulation</h3>
-          <p>Choisis la reformulation correcte — travail du sens et vocabulaire.</p>
-          <button class="btn primary start-btn" data-game="2" aria-label="Lancer Défi 2">Jouer</button>
+          <p>Trouver le bon sens.</p>
+          <button class="btn primary start-btn" data-game="2">Jouer</button>
         </div>
       </article>
-
-      <article class="card" data-game="3" style="background-image: url('family3.jpeg')">
+      <article class="card" style="background-image: url('family3.jpeg')">
         <div class="card-body">
-          <h3>Défi 3 — Mémoire de phrases</h3>
-          <p>Mémorise et restitue des phrases ciblées.</p>
-          <button class="btn primary start-btn" data-game="3" aria-label="Lancer Défi 3">Jouer</button>
+          <h3>Défi 3 — Mémoire</h3>
+          <p>Mémoriser des phrases.</p>
+          <button class="btn primary start-btn" data-game="3">Jouer</button>
         </div>
       </article>
-
-      <article class="card" data-game="4" style="background-image: url('family4.jpeg')">
+      <article class="card" style="background-image: url('family4.jpeg')">
         <div class="card-body">
-          <h3>Défi 4 — Articulation rapide</h3>
-          <p>Tire ta diction : virelangues et vitesse.</p>
-          <button class="btn primary start-btn" data-game="4" aria-label="Lancer Défi 4">Jouer</button>
+          <h3>Défi 4 — Articulation</h3>
+          <p>Virelangues rapides.</p>
+          <button class="btn primary start-btn" data-game="4">Jouer</button>
         </div>
       </article>
     </section>
 
-    <section class="scoreboard" aria-live="polite">
+    <section class="scoreboard">
       <h4>Progression</h4>
-      <div id="progress-list">Chargement des scores...</div>
+      <div id="progress-list">Chargement...</div>
     </section>
   </main>
 
-  <!-- Modal jeu -->
-  <div id="game-modal" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
+  <div id="game-modal" class="modal" aria-hidden="true">
     <div class="modal-card">
       <header class="modal-head">
         <h3 id="game-title">Jeu</h3>
         <div>
-          <button id="btn-speak" class="btn icon" title="Lire la consigne" aria-label="Lire la consigne">🔈</button>
-          <button id="btn-close" class="btn icon" title="Fermer" aria-label="Fermer">✖️</button>
+          <button id="btn-speak" class="btn icon">🔈</button>
+          <button id="btn-close" class="btn icon">✖️</button>
         </div>
       </header>
-      <main class="modal-body" id="game-body" tabindex="0"></main>
+      <main class="modal-body" id="game-body"></main>
       <footer class="modal-foot">
-        <div id="feedback" aria-live="assertive"></div>
+        <div id="feedback"></div>
         <div class="modal-actions">
           <button id="btn-prev" class="btn muted">← Précédent</button>
           <button id="btn-next" class="btn primary">Suivant →</button>
