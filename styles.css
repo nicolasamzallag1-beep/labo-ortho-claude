@@ -87,12 +87,33 @@ main { max-width: 1100px; margin: 0 auto; padding: 40px 20px; text-align: center
 .intro { margin-bottom: 50px; }
 .lead { color: var(--muted); font-size: 20px; }
 
-.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 30px; }
+.grid {
+  display: grid;
+  /* Cette ligne permet de créer autant de colonnes que possible, mais de les centrer */
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  /* C'est cette ligne qui va centrer les cartes sur iPhone */
+  justify-content: center; 
+}
 
 .card {
-  position: relative; height: 300px; border-radius: var(--radius); overflow: hidden;
-  background-size: cover; background-position: center; display: flex; align-items: flex-end;
-  border: 1px solid rgba(255,255,255,0.1); transition: transform 0.3s ease;
+  position: relative;
+  height: 320px;
+  width: 100%;
+  /* On s'assure que la carte ne dépasse pas la largeur du téléphone */
+  max-width: 340px; 
+  margin: 0 auto; /* Centre la carte dans sa propre cellule de grille */
+  border-radius: var(--radius);
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: flex-end;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
 }
 .card:hover { transform: translateY(-10px); }
 .card::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); }
