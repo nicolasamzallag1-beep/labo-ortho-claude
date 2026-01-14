@@ -1,13 +1,12 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Labo Ortho — Claude</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <!-- Animated decorative background is provided by CSS (styles.css) -->
   <div class="bg-decor" aria-hidden="true"></div>
 
   <header class="topbar" role="banner">
@@ -18,9 +17,7 @@
         <p class="subtitle">Exercices personnalisés • Ludique • Professionnel</p>
       </div>
     </div>
-
     <div class="controls">
-      <!-- Ambient toggle (no external audio files required) -->
       <button id="btn-ambient-toggle" class="btn icon" aria-pressed="false" aria-label="Activer ou désactiver l'ambiance">🔊</button>
     </div>
   </header>
@@ -71,7 +68,6 @@
     </section>
   </main>
 
-  <!-- Modal: central gameplay area -->
   <div id="game-modal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="game-title">
     <div class="modal-card">
       <header class="modal-head">
@@ -81,9 +77,7 @@
         </div>
       </header>
 
-      <main class="modal-body" id="game-body" tabindex="0">
-        <!-- Dynamically filled by app.js -->
-      </main>
+      <main class="modal-body" id="game-body" tabindex="0"></main>
 
       <footer class="modal-foot">
         <div id="feedback" class="feedback" aria-live="assertive"></div>
@@ -95,7 +89,6 @@
     </div>
   </div>
 
-  <!-- Data then app logic -->
   <script src="data.js"></script>
   <script src="app.js"></script>
 </body>
