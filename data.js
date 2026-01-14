@@ -1,22 +1,45 @@
-// data.js — contenu exemple (modifie ici pour ajouter/éditer les questions)
-// Garde la structure : game1 (fill), game2 (reformulation), game3 (phrases), game4 (virelangues)
+// data.js — contenu pour Claude
+// Structure : gameData.game1 (fill), game2 (reformulation), game3 (phrases), game4 (articulation)
+// Modifie uniquement ce fichier pour ajouter/ajuster les questions.
 
 const playerName = "Claude";
 
 const gameData = {
+  // 30 items — DÉFI 1 : TEXTES À TROUS
   game1: [
     { text: "Le fils de Claude et Anita s'appelle ___.", answer: "Nicolas" },
     { text: "La capitale de la France est ___.", answer: "Paris" },
-    { text: "Le petit-déjeuner préféré des Français inclut souvent un ___.", answer: "croissant" },
+    { text: "Le petit-déjeuner français traditionnel contient souvent un ___.", answer: "croissant" },
     { text: "La fête nationale française a lieu le 14 ___.", answer: "juillet" },
     { text: "Le fleuve qui traverse Paris est la ___.", answer: "Seine" },
     { text: "Le musée qui abrite la Joconde est le ___.", answer: "Louvre" },
-    { text: "Les grands-parents sont souvent très ___.", answer: "aimants" },
+    { text: "Un repas de dimanche réunit souvent la ___.", answer: "famille" },
+    { text: "Le pain quotidien le plus courant est la ___.", answer: "baguette" },
+    { text: "Le mot pour dire merci est ___.", answer: "merci" },
+    { text: "On célèbre Noël le 25 ___.", answer: "décembre" },
+    { text: "La gare célèbre de Paris s'appelle la gare ___.", answer: "Gare du Nord" },
+    { text: "Un bon livre favorise la ___.", answer: "mémoire" },
+    { text: "La Tour ___ est emblématique de Paris.", answer: "Eiffel" },
+    { text: "Le fromage et le ___ sont souvent associés en France.", answer: "vin" },
     { text: "La rentrée scolaire a lieu en ___.", answer: "septembre" },
-    { text: "Le pain frais sent bon le ___.", answer: "matin" },
-    { text: "La Tour ___ est un monument emblématique de Paris.", answer: "Eiffel" }
+    { text: "Un loisir populaire pour Claude serait les mots ___.", answer: "croisés" },
+    { text: "Le marché propose des produits ___.", answer: "frais" },
+    { text: "La saison des fleurs commence au printemps en ___.", answer: "mars" },
+    { text: "Les grands-parents sont souvent très ___.", answer: "aimants" },
+    { text: "Le Mont-Saint-Michel se situe entre Bretagne et ___.", answer: "Normandie" },
+    { text: "Un petit gâteau de Noël s'appelle une ___.", answer: "bûche" },
+    { text: "Le dimanche est souvent consacré à la ___.", answer: "promenade" },
+    { text: "La monnaie utilisée en France est l'___.", answer: "euro" },
+    { text: "Le mot pour 'bonjour' en français est ___.", answer: "bonjour" },
+    { text: "Le cinéma est un art ___.", answer: "populaire" },
+    { text: "La semaine a sept ___.", answer: "jours" },
+    { text: "La neige tombe souvent en hiver en ___.", answer: "janvier" },
+    { text: "Un cadeau d'anniversaire se donne pour un ___.", answer: "anniversaire" },
+    { text: "La boulangerie vend du pain et des ___.", answer: "pâtisseries" },
+    { text: "La lecture régulière aide la ___.", answer: "concentration" }
   ],
 
+  // 30 items — DÉFI 2 : REFORMULATION (premier élément = correcte)
   game2: [
     { phrase: "Anita cuisine avec passion.", reformulations: ["Anita adore préparer des plats.", "Anita évite la cuisine."] },
     { phrase: "La politesse est essentielle.", reformulations: ["Il est important d'être courtois.", "La politesse est inutile."] },
@@ -24,25 +47,65 @@ const gameData = {
     { phrase: "La lecture enrichit l'esprit.", reformulations: ["Lire développe la connaissance.", "Lire est une perte de temps."] },
     { phrase: "La mémoire se travaille quotidiennement.", reformulations: ["Entraîner sa mémoire la renforce.", "La mémoire ne change jamais."] },
     { phrase: "Un bon repas rassemble les proches.", reformulations: ["Partager un repas crée des liens.", "Manger seul est préférable."] },
+    { phrase: "La solidarité renforce la communauté.", reformulations: ["S'entraider est utile à tous.", "La solidarité affaiblit les liens."] },
     { phrase: "Le bénévolat aide la société.", reformulations: ["Donner de son temps est utile.", "Le bénévolat est inutile."] },
     { phrase: "Les amis sont précieux.", reformulations: ["L'amitié est un trésor.", "L'amitié est une perte de temps."] },
-    { phrase: "La cuisine maison est souvent meilleure.", reformulations: ["Cuisiner chez soi est savoureux.", "La cuisine maison est mauvaise."] },
-    { phrase: "La culture générale aide au quotidien.", reformulations: ["Savoir des choses utiles est un atout.", "La culture générale sert à rien."] }
+    { phrase: "La cuisine de saison est souvent meilleure.", reformulations: ["Les produits de saison ont plus de goût.", "La saison ne change rien au goût."] },
+    { phrase: "La marche quotidienne est bénéfique pour la santé.", reformulations: ["Marcher chaque jour est sain.", "Il vaut mieux rester immobile."] },
+    { phrase: "Le respect des aînés est fondamental.", reformulations: ["Il faut honorer les anciens.", "Les anciens ne doivent pas être écoutés."] },
+    { phrase: "La musique apaise souvent.", reformulations: ["La musique calme et rassure.", "La musique provoque l'agressivité."] },
+    { phrase: "Le cinéma rassemble de nombreux publics.", reformulations: ["Le cinéma est un art populaire.", "Le cinéma n'intéresse personne."] },
+    { phrase: "Un hobby régulier structure la semaine.", reformulations: ["Avoir une activité organise le temps.", "Un hobby n'est pas utile."] },
+    { phrase: "Partager des souvenirs rapproche les familles.", reformulations: ["Raconter son passé rapproche les gens.", "Partager des souvenirs divise."] },
+    { phrase: "Une bonne nuit favorise la mémoire.", reformulations: ["Bien dormir aide la mémoire.", "Le sommeil ne change rien."] },
+    { phrase: "La lecture de journaux garde informé.", reformulations: ["Le journal informe sur l'actualité.", "Le journal raconte des mensonges."] },
+    { phrase: "Les promenades stimulent la créativité.", reformulations: ["Se balader inspire des idées.", "Les promenades n'apportent rien."] },
+    { phrase: "La cuisine maison réchauffe le coeur.", reformulations: ["Cuisiner pour les siens apporte du réconfort.", "La cuisine maison est froide."] },
+    { phrase: "La curiosité aide l'apprentissage.", reformulations: ["Vouloir savoir aide à progresser.", "La curiosité est nuisible."] },
+    { phrase: "Un bon repas rapproche les familles.", reformulations: ["Partager un repas crée des liens.", "Manger seul est mieux."] },
+    { phrase: "Le jardinage détend.", reformulations: ["Prendre soin des plantes apaise.", "Le jardinage stresse."] },
+    { phrase: "Le thé est apprécié le matin.", reformulations: ["Boire du thé est réconfortant.", "Le thé est rare le matin."] },
+    { phrase: "La météo influence la sortie.", reformulations: ["Le temps décide souvent des promenades.", "La météo ne compte jamais."] },
+    { phrase: "Les musées conservent la mémoire.", reformulations: ["Les expositions racontent le passé.", "Les musées n'ont pas d'histoire."] },
+    { phrase: "La patience aide l'apprentissage.", reformulations: ["Prendre son temps facilite la maîtrise.", "La patience est inutile."] },
+    { phrase: "Les rires égayent la journée.", reformulations: ["Rire rend la vie plus belle.", "Rire est sans effet."] },
+    { phrase: "La bibliothèque offre du calme.", reformulations: ["Lire en silence favorise la concentration.", "La bibliothèque est bruyante."] }
   ],
 
+  // 30 items — DÉFI 3 : MÉMOIRE DE PHRASES
   game3: [
     "Claude aime résoudre des mots croisés le dimanche matin.",
-    "Anita prépare souvent des tartes pour la famille.",
+    "Anita prépare souvent des tartes pour le déjeuner familial.",
     "Le Louvre est un musée célèbre situé à Paris.",
     "Le jardin public est un lieu paisible pour marcher.",
     "La lecture aide à entretenir la mémoire.",
-    "Le Mont-Saint-Michel attire beaucoup de visiteurs.",
+    "Le Mont-Saint-Michel attire beaucoup de visiteurs chaque année.",
     "Le pain frais est meilleur le matin chez le boulanger.",
     "La musique adoucit les heures difficiles.",
     "La famille se réunit pour fêter les événements importants.",
-    "Nicolas a conçu ce jeu en pensant à son papa."
+    "Nicolas a conçu ce jeu en pensant à son papa Claude.",
+    "La cuisine maison rassemble plusieurs générations autour de la table.",
+    "La Tour Eiffel s'illumine chaque soir à Paris.",
+    "Une promenade quotidienne améliore le moral.",
+    "Le festival de cinéma de Cannes attire des stars du monde entier.",
+    "Claude garde de beaux souvenirs de ses voyages.",
+    "Le repos après l'effort est important pour récupérer.",
+    "Anita aime prendre soin des plantes du balcon.",
+    "Le marché local propose des produits frais et de saison.",
+    "Lire un bon livre est un plaisir tranquille.",
+    "Les repas familiaux créent des moments de partage.",
+    "La gastronomie française est reconnue internationalement.",
+    "Les expositions d'art stimulent la curiosité et la réflexion.",
+    "Les jeux de mémoire aident à garder l'esprit vif.",
+    "Le patrimoine culturel doit être préservé pour l'avenir.",
+    "Un bon sommeil favorise la santé et la mémoire.",
+    "Les promenades en forêt offrent du calme et du repos.",
+    "Les amis fidèles apportent du soutien et de la joie.",
+    "La photographie capture des souvenirs précieux.",
+    "Ce jeu a été créé spécialement pour aider Claude."
   ],
 
+  // 30 items — DÉFI 4 : ARTICULATION (virelangues)
   game4: [
     "Un chasseur sachant chasser doit savoir chasser sans son chien.",
     "Les chaussettes de l'archiduchesse sont-elles sèches ou archi-sèches ?",
@@ -50,9 +113,28 @@ const gameData = {
     "Le ver vert va vers le verre vert.",
     "Trois tortues trottaient sur un trottoir très étroit.",
     "Didon dîna dit-on du dos d'un dodu dindon.",
+    "Fruits frais, fruits frits, fruits cuits, fruits crus.",
     "La robe rouge de Rosalie est ravissante.",
     "Douze douches douces pour deux douces dames.",
     "Lulu lit la lettre de Lili sous le lilas.",
+    "Cinq chiens chassent six chats dans le champ.",
+    "La pie niche haut, l'oie niche bas, l'hibou niche ni haut ni bas.",
+    "Papier, panier, piano — répète sans hésiter.",
+    "Seize chaises sèches dans une chambre sèche.",
+    "Le ver vert est dans le verre vert.",
+    "Tonton, ton thé t'a-t-il ôté ta toux ?",
+    "Zaza zézaie, Zoé aussi, elles zézayent toutes les deux.",
+    "Trois gros rats gris dans trois gros trous ronds.",
+    "Si mon tonton tond ton tonton, ton tonton sera tondu.",
+    "La pie qui chuchote peint des pages de papier.",
+    "Blanche biche boit dans la blanche bouche.",
+    "Douze dames dansent dans une danse douce.",
+    "Le fisc fixe chaque taxe fixe.",
+    "Petit pot de beurre, quand te dépetitpotdebeurreras-tu ?",
+    "La cavale aux cavaliers cavale dans la cavité.",
+    "Didier dîne de dés de dinde dans son diner.",
+    "Un crabe crabe et trois crabes crabotent.",
+    "Jules jette des jujubes jaunes sur le jardin.",
     "Le soleil se couche sur la colline calme."
   ]
 };
