@@ -7,10 +7,9 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <!-- Fond animé moderne -->
   <div class="bg-animated" aria-hidden="true"></div>
 
-  <header class="topbar">
+  <header class="topbar centered">
     <div class="brand">
       <div class="logo">⟡</div>
       <div>
@@ -20,7 +19,7 @@
     </div>
   </header>
 
-  <main id="main">
+  <main id="main" class="centered-main">
     <section class="intro">
       <h2>Bonjour Claude — Choisis un défi</h2>
       <p class="lead">4 défis progressifs pour la mémoire et le langage.</p>
@@ -31,28 +30,28 @@
         <div class="card-body">
           <h3>Défi 1 — Textes à trous</h3>
           <p class="rules">Complète la phrase avec le mot manquant.</p>
-          <button class="start-btn" onclick="openGame(1)">Jouer</button>
+          <button class="start-btn" onclick="playClick(); openGame(1)">Jouer</button>
         </div>
       </article>
       <article class="card" style="background-image:url('family2.jpeg')">
         <div class="card-body">
           <h3>Défi 2 — Reformulation</h3>
           <p class="rules">Choisis le sens le plus proche.</p>
-          <button class="start-btn" onclick="openGame(2)">Jouer</button>
+          <button class="start-btn" onclick="playClick(); openGame(2)">Jouer</button>
         </div>
       </article>
       <article class="card" style="background-image:url('family3.jpeg')">
         <div class="card-body">
           <h3>Défi 3 — Mémoire Flash</h3>
           <p class="rules">Mémorise le mot, puis écris-le.</p>
-          <button class="start-btn" onclick="openGame(3)">Jouer</button>
+          <button class="start-btn" onclick="playClick(); openGame(3)">Jouer</button>
         </div>
       </article>
       <article class="card" style="background-image:url('family4.jpeg')">
         <div class="card-body">
           <h3>Défi 4 — Articulation</h3>
           <p class="rules">Répète les phrases complexes.</p>
-          <button class="start-btn" onclick="openGame(4)">Jouer</button>
+          <button class="start-btn" onclick="playClick(); openGame(4)">Jouer</button>
         </div>
       </article>
     </section>
@@ -63,29 +62,24 @@
     </section>
   </main>
 
-  <!-- Fenêtre de jeu (Modal) -->
   <div id="modal" class="modal" aria-hidden="true">
     <div class="modal-card">
       <header class="modal-head">
         <h3 id="modal-title">Jeu</h3>
-        <button class="btn-close" onclick="closeGame()">✖</button>
+        <button class="btn-close" aria-label="Fermer" onclick="playClick(); closeGame()">✖</button>
       </header>
       <div class="modal-body" id="modal-body"></div>
       <footer class="modal-foot">
         <div id="feedback" class="feedback"></div>
         <div class="modal-actions">
-          <button id="btn-prev" class="btn muted" onclick="goPrev()">← Précédent</button>
+          <button id="btn-prev" class="btn muted" onclick="playClick(); goPrev()">← Précédent</button>
           <div id="score-area" class="score-area">Score : 0 / 0</div>
-          <button id="btn-next" class="btn primary" onclick="goNext()">Suivant →</button>
+          <button id="btn-next" class="btn primary" onclick="playClick(); goNext()">Suivant →</button>
         </div>
       </footer>
     </div>
   </div>
 
-  <script src="data.js"></script>
-  <script src="app.js"></script>
-</body>
-</html>
   <script src="data.js"></script>
   <script src="app.js"></script>
 </body>
