@@ -5,20 +5,34 @@ let sessionQuestions = [];
 let answers = [];
 let sessionScore = 0;
 
-// --- SYSTÈME DE BRUITAGES (SANS FICHIERS) ---
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+// --- SYSTÈME DE BRUITAGES SÉCURISÉ ---
+let audioCtx = null;
+
+function initAudio() {
+    if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
+}
 
 function playSound(freq, type, duration) {
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.type = type;
-    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-    osc.start();
-    osc.stop(audioCtx.currentTime + duration);
+    try {
+        initAudio();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+    } catch (e) {
+        console.log("L'audio n'a pas pu démarrer :", e);
+    }
 }
 
 function playClick() { playSound(600, 'sine', 0.1); }
@@ -26,7 +40,10 @@ function playSuccess() { playSound(800, 'sine', 0.2); setTimeout(() => playSound
 function playError() { playSound(200, 'sawtooth', 0.4); }
 
 // --- LOGIQUE DU JEU ---
-function normalize(s) { return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim(); }
+function normalize(s) { 
+    if(!s) return "";
+    return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim(); 
+}
 
 function speak(text) {
     if ('speechSynthesis' in window) {
@@ -39,23 +56,30 @@ function speak(text) {
 }
 
 function openGame(id) {
-    playClick();
+    // On essaie de jouer le son mais on ne bloque pas si ça échoue
+    try { playClick(); } catch(e) {}
+    
     if (typeof gameData === 'undefined') {
-        alert("Erreur : data.js non chargé.");
+        alert("Erreur : Le fichier data.js n'est pas détecté.");
         return;
     }
+    
     currentGame = id;
     const pool = [...gameData[`game${id}`]].sort(() => 0.5 - Math.random());
     sessionQuestions = pool.slice(0, MAX_QUESTIONS);
     answers = Array(MAX_QUESTIONS).fill(null);
     sessionScore = 0;
     currentIndex = 0;
-    document.getElementById('modal').setAttribute('aria-hidden', 'false');
-    render();
+    
+    const modal = document.getElementById('modal');
+    if (modal) {
+        modal.setAttribute('aria-hidden', 'false');
+        render();
+    }
 }
 
 function closeGame() {
-    playClick();
+    try { playClick(); } catch(e) {}
     document.getElementById('modal').setAttribute('aria-hidden', 'true');
     updateGlobalStats();
 }
@@ -63,6 +87,8 @@ function closeGame() {
 function render() {
     const body = document.getElementById('modal-body');
     const feedback = document.getElementById('feedback');
+    if (!body || !feedback) return;
+
     feedback.textContent = '';
     
     if (currentIndex >= MAX_QUESTIONS) { showEnd(); return; }
@@ -99,30 +125,47 @@ function render() {
 }
 
 function check1() {
-    const val = document.getElementById('ans').value;
+    const input = document.getElementById('ans');
+    if (!input) return;
+    const val = input.value;
     const ok = normalize(val) === normalize(sessionQuestions[currentIndex].answer);
     finishQ(ok, val, sessionQuestions[currentIndex].answer);
 }
+
 function check2(choice) {
     const ok = choice === sessionQuestions[currentIndex].reformulations[0];
     finishQ(ok, choice, sessionQuestions[currentIndex].reformulations[0]);
 }
-function startInput3() { playClick(); answers[currentIndex] = { phase: 'input' }; render(); }
+
+function startInput3() { 
+    try { playClick(); } catch(e) {}
+    answers[currentIndex] = { phase: 'input' }; 
+    render(); 
+}
+
 function check3() {
-    const val = document.getElementById('ans').value;
+    const input = document.getElementById('ans');
+    if (!input) return;
+    const val = input.value;
     const ok = normalize(val) === normalize(sessionQuestions[currentIndex].word);
     finishQ(ok, val, sessionQuestions[currentIndex].word);
 }
+
 function check4(ok) { finishQ(ok, ok ? 'Réussi' : 'Difficile', ''); }
 
 function finishQ(ok, user, correct) {
-    if (ok) { playSuccess(); sessionScore++; } else { playError(); }
+    if (ok) { 
+        try { playSuccess(); } catch(e) {}
+        sessionScore++; 
+    } else { 
+        try { playError(); } catch(e) {}
+    }
     document.getElementById('feedback').textContent = ok ? "✅ BRAVO !" : `❌ Non, c'était : ${correct}`;
     setTimeout(() => { currentIndex++; render(); }, 2000);
 }
 
-function goPrev() { playClick(); if (currentIndex > 0) { currentIndex--; render(); } }
-function goNext() { playClick(); if (currentIndex < MAX_QUESTIONS - 1) { currentIndex++; render(); } }
+function goPrev() { try { playClick(); } catch(e) {} if (currentIndex > 0) { currentIndex--; render(); } }
+function goNext() { try { playClick(); } catch(e) {} if (currentIndex < MAX_QUESTIONS - 1) { currentIndex++; render(); } }
 
 function showEnd() {
     const body = document.getElementById('modal-body');
@@ -140,8 +183,11 @@ function updateGlobalStats() {
 
 function loadStats() {
     const stats = JSON.parse(localStorage.getItem('ortho_stats') || '{"1":0,"2":0,"3":0,"4":0}');
-    document.getElementById('progress-list').innerHTML = [1,2,3,4].map(i => 
-        `<div>Défi ${i}<br><b style="color:#6ee7b7; font-size:26px">${stats[i]}/10</b></div>`).join('');
+    const list = document.getElementById('progress-list');
+    if (list) {
+        list.innerHTML = [1,2,3,4].map(i => 
+            `<div>Défi ${i}<br><b style="color:#6ee7b7; font-size:26px">${stats[i]}/10</b></div>`).join('');
+    }
 }
 
 window.onload = loadStats;
