@@ -1,11 +1,6 @@
-// data.js — contenu pour Claude
-// Structure : gameData.game1 (fill), game2 (reformulation), game3 (phrases), game4 (articulation)
-// Modifie uniquement ce fichier pour ajouter/ajuster les questions.
-
 const playerName = "Claude";
 
 const gameData = {
-  // 30 items — DÉFI 1 : TEXTES À TROUS
   game1: [
     { text: "Le fils de Claude et Anita s'appelle ___.", answer: "Nicolas" },
     { text: "La capitale de la France est ___.", answer: "Paris" },
@@ -39,7 +34,6 @@ const gameData = {
     { text: "La lecture régulière aide la ___.", answer: "concentration" }
   ],
 
-  // 30 items — DÉFI 2 : REFORMULATION (premier élément = correcte)
   game2: [
     { phrase: "Anita cuisine avec passion.", reformulations: ["Anita adore préparer des plats.", "Anita évite la cuisine."] },
     { phrase: "La politesse est essentielle.", reformulations: ["Il est important d'être courtois.", "La politesse est inutile."] },
@@ -72,7 +66,6 @@ const gameData = {
     { phrase: "La bibliothèque offre du calme.", reformulations: ["Lire en silence favorise la concentration.", "La bibliothèque est bruyante."] }
   ],
 
-  // 30 items — DÉFI 3 : MÉMOIRE DE PHRASES
   game3: [
     "Claude aime résoudre des mots croisés le dimanche matin.",
     "Anita prépare souvent des tartes pour le déjeuner familial.",
@@ -105,7 +98,6 @@ const gameData = {
     "Ce jeu a été créé spécialement pour aider Claude."
   ],
 
-  // 30 items — DÉFI 4 : ARTICULATION (virelangues)
   game4: [
     "Un chasseur sachant chasser doit savoir chasser sans son chien.",
     "Les chaussettes de l'archiduchesse sont-elles sèches ou archi-sèches ?",
