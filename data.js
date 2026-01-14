@@ -3,43 +3,43 @@ const gameData = {
   game1: [
     { text: "Le fils de Claude et Anita s'appelle ___.", answer: "Nicolas" },
     { text: "La capitale de la France est ___.", answer: "Paris" },
-    { text: "Le petit-déjeuner français traditionnel contient souvent un ___.", answer: "croissant" },
+    { text: "Le plat traditionnel stéphanois est la ___.", answer: "rapée" },
     { text: "La fête nationale française a lieu le 14 ___.", answer: "juillet" },
     { text: "Le fleuve qui traverse Paris est la ___.", answer: "Seine" },
     { text: "Le musée qui abrite la Joconde est le ___.", answer: "Louvre" },
-    { text: "Un repas de dimanche réunit souvent la ___.", answer: "famille" },
+    { text: "Le repas du vendredri soir chez les juifs réunit est le repas du ___.", answer: "shabbat" },
     { text: "Le pain quotidien le plus courant est la ___.", answer: "baguette" },
-    { text: "Le mot pour dire merci est ___.", answer: "merci" },
+    { text: "En Anglais, le mot pour dire merci est ___.", answer: "thank you" },
     { text: "On célèbre Noël le 25 ___.", answer: "décembre" },
-    { text: "La gare célèbre de Paris s'appelle la gare ___.", answer: "Gare du Nord" },
+    { text: "L'aéroport de Tel Aviv s'appelle l'aéroport ___.", answer: "Ben Gourion" },
     { text: "Un bon livre favorise la ___.", answer: "mémoire" },
     { text: "La Tour ___ est emblématique de Paris.", answer: "Eiffel" },
     { text: "Le fromage et le ___ sont souvent associés en France.", answer: "vin" },
     { text: "La rentrée scolaire a lieu en ___.", answer: "septembre" },
-    { text: "Un loisir populaire pour Claude serait les mots ___.", answer: "croisés" },
+    { text: "Un loisir populaire pour Claude serait la ___.", answer: "lecture" },
     { text: "Le marché propose des produits ___.", answer: "frais" },
     { text: "La saison des fleurs commence au printemps en ___.", answer: "mars" },
-    { text: "Les grands-parents sont souvent très ___.", answer: "aimants" },
+    { text: "Les parents de Nicolas sont très ___.", answer: "aimants" },
     { text: "Le Mont-Saint-Michel se situe entre Bretagne et ___.", answer: "Normandie" },
     { text: "Un petit gâteau de Noël s'appelle une ___.", answer: "bûche" },
     { text: "Le dimanche est souvent consacré à la ___.", answer: "promenade" },
     { text: "La monnaie utilisée en France est l'___.", answer: "euro" },
-    { text: "Le mot pour 'bonjour' en français est ___.", answer: "bonjour" },
-    { text: "Le cinéma est un art ___.", answer: "populaire" },
-    { text: "La semaine a sept ___.", answer: "jours" },
-    { text: "La neige tombe souvent en hiver en ___.", answer: "janvier" },
-    { text: "Un cadeau d'anniversaire se donne pour un ___.", answer: "anniversaire" },
+    { text: "Le mot pour 'bonjour' en anglais est ___.", answer: "hello" },
+    { text: "L'adresse de Claude à Saint Etienne est ___.", answer: "35 cours fauriel" },
+    { text: "La semaine comporte sept ___.", answer: "jours" },
+    { text: "La boulangerie préférée de Claude et Anita s'appelle ___.", answer: "la manufacture de Jean" },
+    { text: "Anita et Claude vont souvent ensemble chez le ___.", answer: "kiné" },
     { text: "La boulangerie vend du pain et des ___.", answer: "pâtisseries" },
     { text: "La lecture régulière aide la ___.", answer: "concentration" },
     { text: "Claude aime pratiquer la marche ___.", answer: "quotidienne" }, // personnalisé
-    { text: "Anita prépare souvent des tartes au ___.", answer: "pommes" }, // personnalisé
-    { text: "Nicolas téléphone souvent à son ___.", answer: "père" }, // personnalisé
-    { text: "Chez Claude, le chien s'appelle ___.", answer: "Rex" }, // personnalisé
-    { text: "Le plat préféré d'Anita est le ___.", answer: "gratin" }, // personnalisé
+    { text: "Anita prépare souvent des tartes à la ___.", answer: "tomate" }, // personnalisé
+    { text: "Nicolas téléphone souvent à ses ___.", answer: "parents" }, // personnalisé
+    { text: "Claude demande souvent a ALexa ___.", answer: "quelle heure est il ?" }, // personnalisé
+    { text: "L'entrée préférée d'Anita et Claude chez Jean est le ___.", answer: "wrap végétarien" }, // personnalisé
     { text: "Nicolas aime écouter de la ___.", answer: "musique" }, // personnalisé
-    { text: "Claude lit les mots ___.", answer: "croisés" }, // personnalisé (redundant but fine)
-    { text: "Anita aime le jardin et plante des ___.", answer: "fleurs" }, // personnalisé
-    { text: "Nicolas habitait près de la ___.", answer: "mer" } // personnalisé
+    { text: "Anita fait des mots ___.", answer: "croisés" }, // personnalisé (redundant but fine)
+    { text: "Claude aime le jardin et plante des ___.", answer: "fleurs" }, // personnalisé
+    { text: "Nicolas habite à ___.", answer: "Lyon" } // personnalisé
   ],
 
   // --- JEU 2 : Reformulation (40 items)
