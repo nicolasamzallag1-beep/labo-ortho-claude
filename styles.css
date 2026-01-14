@@ -12,15 +12,40 @@ body {
   min-height: 100vh; overflow-x: hidden;
 }
 
-/* Fond animé avec motifs */
+/* Fond moderne Tech 2026 */
 .bg-animated {
-  position: fixed; inset: 0; z-index: -1;
-  background: radial-gradient(circle at 20% 20%, #0b2a3f 0%, transparent 40%),
-              radial-gradient(circle at 80% 80%, #061122 0%, transparent 50%);
-  animation: bgPulse 15s ease-in-out infinite alternate;
-  opacity: 0.8;
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: 
+    radial-gradient(circle at 10% 20%, rgba(110, 231, 183, 0.05) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(59, 130, 246, 0.08) 0%, transparent 40%),
+    var(--bg-dark);
+  overflow: hidden;
 }
-@keyframes bgPulse { 0% { transform: scale(1); } 100% { transform: scale(1.1); } }
+
+.bg-animated::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  mask-image: radial-gradient(ellipse at center, black, transparent 80%);
+}
+
+.bg-animated::after {
+  content: "";
+  position: absolute;
+  top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background: radial-gradient(circle at center, rgba(110, 231, 183, 0.03) 0%, transparent 20%);
+  animation: rotateBg 30s linear infinite;
+}
+
+@keyframes rotateBg {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
 
 .topbar { padding: 40px 20px; display: flex; flex-direction: column; align-items: center; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
 .logo { width: 60px; height: 60px; background: var(--accent); color: #042; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 28px; margin-bottom: 15px; }
