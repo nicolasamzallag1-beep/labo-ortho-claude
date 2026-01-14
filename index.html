@@ -7,74 +7,86 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <header class="topbar">
+  <!-- Animated decorative background is provided by CSS (styles.css) -->
+  <div class="bg-decor" aria-hidden="true"></div>
+
+  <header class="topbar" role="banner">
     <div class="brand">
-      <div class="logo">⟡</div>
-      <div>
+      <div class="logo" aria-hidden="true">⟡</div>
+      <div class="brand-text">
         <h1>LABO ORTHO — Claude</h1>
         <p class="subtitle">Exercices personnalisés • Ludique • Professionnel</p>
       </div>
     </div>
+
     <div class="controls">
-      <button id="btn-ambient-toggle" class="btn icon" title="Son">🔊</button>
+      <!-- Ambient toggle (no external audio files required) -->
+      <button id="btn-ambient-toggle" class="btn icon" aria-pressed="false" aria-label="Activer ou désactiver l'ambiance">🔊</button>
     </div>
   </header>
 
-  <main id="main">
-    <section class="intro">
-      <h2>Bonjour Claude — Choisis un défi</h2>
-      <p>4 défis progressifs pour la mémoire et le langage.</p>
+  <main id="main" role="main">
+    <section class="intro" aria-labelledby="welcome-title">
+      <h2 id="welcome-title">Bonjour Claude — Choisis un défi</h2>
+      <p class="lead">4 défis progressifs — mémoire, langage, reformulation, articulation.</p>
     </section>
 
-    <section class="grid">
-      <article class="card" style="background-image: url('family1.jpeg')">
+    <section class="grid" aria-label="Liste des défis">
+      <article class="card" data-game="1" style="background-image:url('family1.jpeg')">
         <div class="card-body">
           <h3>Défi 1 — Textes à trous</h3>
-          <p>Remplir les blancs.</p>
-          <button class="btn primary start-btn" data-game="1">Jouer</button>
+          <p>Remplir les blancs : mots, famille, culture générale.</p>
+          <button class="btn primary start-btn" data-game="1" aria-label="Lancer Défi 1">Jouer</button>
         </div>
       </article>
-      <article class="card" style="background-image: url('family2.jpeg')">
+
+      <article class="card" data-game="2" style="background-image:url('family2.jpeg')">
         <div class="card-body">
           <h3>Défi 2 — Reformulation</h3>
-          <p>Trouver le bon sens.</p>
-          <button class="btn primary start-btn" data-game="2">Jouer</button>
+          <p>Choisis la reformulation correcte.</p>
+          <button class="btn primary start-btn" data-game="2" aria-label="Lancer Défi 2">Jouer</button>
         </div>
       </article>
-      <article class="card" style="background-image: url('family3.jpeg')">
+
+      <article class="card" data-game="3" style="background-image:url('family3.jpeg')">
         <div class="card-body">
-          <h3>Défi 3 — Mémoire</h3>
-          <p>Mémoriser des phrases.</p>
-          <button class="btn primary start-btn" data-game="3">Jouer</button>
+          <h3>Défi 3 — Mémoire de phrases</h3>
+          <p>Mémorise puis restitue des phrases.</p>
+          <button class="btn primary start-btn" data-game="3" aria-label="Lancer Défi 3">Jouer</button>
         </div>
       </article>
-      <article class="card" style="background-image: url('family4.jpeg')">
+
+      <article class="card" data-game="4" style="background-image:url('family4.jpeg')">
         <div class="card-body">
-          <h3>Défi 4 — Articulation</h3>
-          <p>Virelangues rapides.</p>
-          <button class="btn primary start-btn" data-game="4">Jouer</button>
+          <h3>Défi 4 — Articulation rapide</h3>
+          <p>Virelangues et vitesse.</p>
+          <button class="btn primary start-btn" data-game="4" aria-label="Lancer Défi 4">Jouer</button>
         </div>
       </article>
     </section>
 
-    <section class="scoreboard">
+    <section class="scoreboard" aria-live="polite" aria-atomic="true">
       <h4>Progression</h4>
-      <div id="progress-list">Chargement...</div>
+      <div id="progress-list">Chargement des scores...</div>
     </section>
   </main>
 
-  <div id="game-modal" class="modal" aria-hidden="true">
+  <!-- Modal: central gameplay area -->
+  <div id="game-modal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="game-title">
     <div class="modal-card">
       <header class="modal-head">
         <h3 id="game-title">Jeu</h3>
-        <div>
-          <button id="btn-speak" class="btn icon">🔈</button>
-          <button id="btn-close" class="btn icon">✖️</button>
+        <div class="modal-controls">
+          <button id="btn-close" class="btn icon" aria-label="Fermer">✖</button>
         </div>
       </header>
-      <main class="modal-body" id="game-body"></main>
+
+      <main class="modal-body" id="game-body" tabindex="0">
+        <!-- Dynamically filled by app.js -->
+      </main>
+
       <footer class="modal-foot">
-        <div id="feedback"></div>
+        <div id="feedback" class="feedback" aria-live="assertive"></div>
         <div class="modal-actions">
           <button id="btn-prev" class="btn muted">← Précédent</button>
           <button id="btn-next" class="btn primary">Suivant →</button>
@@ -83,6 +95,7 @@
     </div>
   </div>
 
+  <!-- Data then app logic -->
   <script src="data.js"></script>
   <script src="app.js"></script>
 </body>
