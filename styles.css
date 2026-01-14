@@ -137,16 +137,38 @@ main { max-width: 1100px; margin: 0 auto; padding: 40px 20px; text-align: center
 }
 
 .modal-head { padding: 25px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; }
-.modal-body { padding: 40px; min-height: 350px; font-size: 28px; line-height: 1.6; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.modal-body {
+  padding: 20px;
+  min-height: 350px;
+  font-size: 28px;
+  line-height: 1.6;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;      /* Centre tout horizontalement */
+  justify-content: center;   /* Centre tout verticalement */
+  text-align: center;
+  width: 100%;
+  box-sizing: border-box;    /* Évite que le padding ne décale le contenu */
+}
 .modal-foot { padding: 25px; border-top: 1px solid rgba(255,255,255,0.1); }
 
 .btn-close { background: transparent; border: 0; color: var(--accent); font-size: 32px; cursor: pointer; }
 
 /* Barre de réponse centrée */
 .input-field { 
-  width: 100%; max-width: 500px; padding: 20px; font-size: 26px; border-radius: 15px; 
-  border: 2px solid var(--accent); background: #071426; color: white; 
-  margin: 30px auto; text-align: center; display: block;
+  width: 90%;               /* Prend presque toute la largeur disponible */
+  max-width: 400px;         /* Mais ne devient pas trop large sur ordinateur */
+  padding: 18px;
+  font-size: 24px;
+  border-radius: 15px; 
+  border: 2px solid var(--accent);
+  background: #071426;
+  color: white; 
+  margin: 20px auto;        /* Le "auto" est crucial pour le centrage horizontal */
+  display: block;
+  text-align: center;       /* Centre le texte à l'intérieur de la barre */
+  -webkit-appearance: none; /* Supprime les styles par défaut de l'iPhone */
 }
 
 .btn-choice { display: block; width: 100%; padding: 22px; margin-bottom: 15px; background: rgba(255,255,255,0.05); border: 1px solid var(--accent); color: white; border-radius: 15px; text-align: left; font-size: 22px; cursor: pointer; }
