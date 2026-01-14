@@ -12,29 +12,31 @@ body {
   min-height: 100vh; overflow-x: hidden;
 }
 
-/* Fond moderne Tech 2026 */
+/* Fond optimisé pour iPhone et Mobile */
 .bg-animated {
   position: fixed;
   inset: 0;
   z-index: -1;
-  /* On utilise des couleurs plus claires pour que le dégradé soit visible */
-  background: radial-gradient(circle at center, #162a44 0%, #071426 100%);
+  /* Dégradé plus contrasté pour mobile */
+  background: linear-gradient(135deg, #1a365d 0%, #071426 100%);
 }
 
 .bg-animated::before {
   content: "";
   position: absolute;
   inset: 0;
-  /* Points plus blancs et plus gros */
-  background-image: radial-gradient(rgba(110, 231, 183, 0.15) 2px, transparent 2px);
-  background-size: 50px 50px;
-  /* Animation plus rapide pour vérification */
-  animation: moveDots 20s linear infinite;
+  /* Points plus gros et plus opaques pour les petits écrans */
+  background-image: radial-gradient(rgba(110, 231, 183, 0.25) 2px, transparent 2px);
+  background-size: 40px 40px;
+  /* Animation simplifiée pour mobile */
+  animation: moveDots 30s linear infinite;
+  /* Force le rendu matériel sur iPhone */
+  transform: translateZ(0);
 }
 
 @keyframes moveDots {
   from { background-position: 0 0; }
-  to { background-position: 50px 50px; }
+  to { background-position: 40px 40px; }
 }
 }
 
