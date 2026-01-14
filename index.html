@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Labo Ortho — Claude</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="bg-animated" aria-hidden="true"></div>
+  <div class="bg-animated"></div>
 
   <header class="topbar">
     <div class="brand">
@@ -33,7 +33,6 @@
           <button class="start-btn" onclick="openGame(1)">Jouer</button>
         </div>
       </article>
-
       <article class="card" style="background-image:url('family2.jpeg')">
         <div class="card-body">
           <h3>Défi 2 — Reformulation</h3>
@@ -41,15 +40,13 @@
           <button class="start-btn" onclick="openGame(2)">Jouer</button>
         </div>
       </article>
-
       <article class="card" style="background-image:url('family3.jpeg')">
         <div class="card-body">
           <h3>Défi 3 — Mémoire Flash</h3>
-          <p class="rules">Mémorise le mot (lu à voix haute) puis écris-le.</p>
+          <p class="rules">Mémorise le mot, puis écris-le.</p>
           <button class="start-btn" onclick="openGame(3)">Jouer</button>
         </div>
       </article>
-
       <article class="card" style="background-image:url('family4.jpeg')">
         <div class="card-body">
           <h3>Défi 4 — Articulation</h3>
@@ -65,16 +62,13 @@
     </section>
   </main>
 
-  <!-- FENÊTRE DE JEU (MODAL) - CORRIGÉE POUR LA LISIBILITÉ -->
   <div id="modal" class="modal" aria-hidden="true">
     <div class="modal-card">
       <header class="modal-head">
         <h3 id="modal-title">Jeu</h3>
-        <button onclick="closeGame()" class="btn-close">✖</button>
+        <button class="btn-close" onclick="closeGame()">✖</button>
       </header>
-
       <div class="modal-body" id="modal-body"></div>
-
       <footer class="modal-foot">
         <div id="feedback" class="feedback"></div>
         <div class="modal-actions">
@@ -86,6 +80,7 @@
     </div>
   </div>
 
+  <!-- L'ORDRE EST CRUCIAL ICI -->
   <script src="data.js"></script>
   <script src="app.js"></script>
 </body>
