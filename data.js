@@ -7,7 +7,7 @@ const gameData = {
     { text: "La fête nationale française a lieu le 14 ___.", answer: "juillet" },
     { text: "Le fleuve qui traverse Paris est la ___.", answer: "Seine" },
     { text: "Le musée qui abrite la Joconde est le ___.", answer: "Louvre" },
-    { text: "Le repas du vendredri soir chez les juifs réunit est le repas du ___.", answer: "shabbat" },
+    { text: "Le repas du vendredi soir chez les juifs réunit est le repas du ___.", answer: "shabbat" },
     { text: "Le pain quotidien le plus courant est la ___.", answer: "baguette" },
     { text: "En Anglais, le mot pour dire merci est ___.", answer: "thank you" },
     { text: "On célèbre Noël le 25 ___.", answer: "décembre" },
@@ -38,7 +38,7 @@ const gameData = {
     { text: "L'entrée préférée d'Anita et Claude chez Jean est le ___.", answer: "wrap végétarien" }, // personnalisé
     { text: "Nicolas aime écouter de la ___.", answer: "musique" }, // personnalisé
     { text: "Anita fait des mots ___.", answer: "croisés" }, // personnalisé (redundant but fine)
-    { text: "Claude aime le jardin et plante des ___.", answer: "fleurs" }, // personnalisé
+    { text: "Le chanteur préféré de Claude est ___.", answer: "Bob Dylan" }, // personnalisé
     { text: "Nicolas habite à ___.", answer: "Lyon" } // personnalisé
   ],
 
@@ -94,7 +94,7 @@ const gameData = {
     { word: "Silence" },{ word: "Partage" },{ word: "Émotion" },{ word: "Culture" },{ word: "Mémoire" },
     { word: "Énergie" },{ word: "Sagesse" },{ word: "Passion" },{ word: "Univers" },{ word: "Victoire" },
     // personnalisés (Claude/Anita/Nicolas)
-    { word: "Claude" },{ word: "Anita" },{ word: "Nicolas" },{ word: "Rendezvous" },{ word: "Souvenir" },
+    { word: "Claude" },{ word: "Anita" },{ word: "Nicolas" },{ word: "Falafel" },{ word: "Souvenir" },
     { word: "Balade" },{ word: "Confiserie" },{ word: "Famillial" },{ word: "Croissants" },{ word: "Concert" }
   ],
 
