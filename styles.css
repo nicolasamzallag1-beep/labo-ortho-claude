@@ -41,46 +41,46 @@ body {
 }
 
 .topbar {
-  padding: 60px 20px 40px;
-  display: flex;
-  flex-direction: column; /* Aligne les éléments en colonne */
-  align-items: center;    /* Centre horizontalement */
-  text-align: center;     /* Centre le texte */
-  gap: 15px;
+  padding: 60px 20px 40px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  width: 100% !important;
+  gap: 15px !important;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .logo {
-  width: 64px;
-  height: 64px;
-  background: var(--accent);
-  color: #042;
-  border-radius: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  font-size: 32px;
-  box-shadow: 0 0 20px rgba(110, 231, 183, 0.3);
-  margin-bottom: 5px;
+  width: 64px !important;
+  height: 64px !important;
+  background: var(--accent) !important;
+  color: #042 !important;
+  border-radius: 18px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-weight: bold !important;
+  font-size: 32px !important;
+  margin: 0 auto 10px auto !important; /* Force le centrage horizontal */
 }
 
 .topbar h1 {
-  margin: 0;
-  font-size: 36px;
-  font-weight: 900;
-  letter-spacing: 2px;
-  text-shadow: 0 0 15px rgba(110, 231, 183, 0.3);
-  color: white;
-  width: 100%; /* Assure que le titre prend toute la largeur pour être centré */
+  margin: 0 auto !important;
+  font-size: 36px !important;
+  font-weight: 900 !important;
+  color: white !important;
+  display: block !important;
+  width: 100% !important;
 }
 
 .subtitle {
-  margin: 0;
-  color: var(--muted);
-  font-size: 18px;
-  font-weight: 500;
-  width: 100%;
+  margin: 5px auto 0 auto !important;
+  color: var(--muted) !important;
+  font-size: 18px !important;
+  display: block !important;
+  width: 100% !important;
 }
 
 main { max-width: 1100px; margin: 0 auto; padding: 40px 20px; text-align: center; }
