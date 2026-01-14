@@ -9,9 +9,9 @@
 <body>
   <div class="bg-animated" aria-hidden="true"></div>
 
-  <header class="topbar" role="banner">
+  <header class="topbar">
     <div class="brand">
-      <div class="logo" aria-hidden="true">⟡</div>
+      <div class="logo">⟡</div>
       <div>
         <h1>LABO ORTHO — Claude</h1>
         <p class="subtitle">Exercices personnalisés • Ludique • Professionnel</p>
@@ -19,68 +19,68 @@
     </div>
   </header>
 
-  <main id="main" role="main">
-    <section class="intro" aria-labelledby="welcome">
-      <h2 id="welcome">Bonjour Claude — Choisis un défi</h2>
-      <p class="lead">4 défis progressifs — compréhension, reformulation, mémoire visuelle, articulation.</p>
+  <main id="main">
+    <section class="intro">
+      <h2>Bonjour Claude — Choisis un défi</h2>
+      <p class="lead">4 défis progressifs pour la mémoire et le langage.</p>
     </section>
 
-    <section class="grid" aria-label="Choix des défis">
-      <article class="card" data-game="1" style="background-image:url('family1.jpeg')">
+    <section class="grid">
+      <article class="card" style="background-image:url('family1.jpeg')">
         <div class="card-body">
           <h3>Défi 1 — Textes à trous</h3>
-          <p class="rules">Complète la phrase avec le mot manquant (écris et valide).</p>
-          <button class="start-btn" data-game="1" aria-label="Lancer défi 1">Jouer</button>
+          <p class="rules">Complète la phrase avec le mot manquant.</p>
+          <button class="start-btn" onclick="openGame(1)">Jouer</button>
         </div>
       </article>
 
-      <article class="card" data-game="2" style="background-image:url('family2.jpeg')">
+      <article class="card" style="background-image:url('family2.jpeg')">
         <div class="card-body">
           <h3>Défi 2 — Reformulation</h3>
-          <p class="rules">Choisis la reformulation la plus proche du sens.</p>
-          <button class="start-btn" data-game="2" aria-label="Lancer défi 2">Jouer</button>
+          <p class="rules">Choisis le sens le plus proche.</p>
+          <button class="start-btn" onclick="openGame(2)">Jouer</button>
         </div>
       </article>
 
-      <article class="card" data-game="3" style="background-image:url('family3.jpeg')">
+      <article class="card" style="background-image:url('family3.jpeg')">
         <div class="card-body">
           <h3>Défi 3 — Mémoire Flash</h3>
-          <p class="rules">Regarde le mot, clique "J'ai mémorisé", puis écris-le quand il disparaît.</p>
-          <button class="start-btn" data-game="3" aria-label="Lancer défi 3">Jouer</button>
+          <p class="rules">Mémorise le mot (lu à voix haute) puis écris-le.</p>
+          <button class="start-btn" onclick="openGame(3)">Jouer</button>
         </div>
       </article>
 
-      <article class="card" data-game="4" style="background-image:url('family4.jpeg')">
+      <article class="card" style="background-image:url('family4.jpeg')">
         <div class="card-body">
           <h3>Défi 4 — Articulation</h3>
-          <p class="rules">Répète les virelangues ; indique si c'est réussi.</p>
-          <button class="start-btn" data-game="4" aria-label="Lancer défi 4">Jouer</button>
+          <p class="rules">Répète les phrases complexes.</p>
+          <button class="start-btn" onclick="openGame(4)">Jouer</button>
         </div>
       </article>
     </section>
 
-    <section class="scoreboard" aria-live="polite">
-      <h4>Progression globale</h4>
+    <section class="scoreboard">
+      <h4>Ta progression globale</h4>
       <div id="progress-list">Chargement...</div>
     </section>
   </main>
 
-  <!-- Modal de jeu -->
-  <div id="modal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <!-- FENÊTRE DE JEU (MODAL) - CORRIGÉE POUR LA LISIBILITÉ -->
+  <div id="modal" class="modal" aria-hidden="true">
     <div class="modal-card">
       <header class="modal-head">
         <h3 id="modal-title">Jeu</h3>
-        <button id="btn-close" class="btn-icon" aria-label="Fermer le jeu">✖</button>
+        <button onclick="closeGame()" class="btn-close">✖</button>
       </header>
 
-      <main class="modal-body" id="modal-body" tabindex="0"></main>
+      <div class="modal-body" id="modal-body"></div>
 
       <footer class="modal-foot">
-        <div id="feedback" class="feedback" aria-live="assertive"></div>
+        <div id="feedback" class="feedback"></div>
         <div class="modal-actions">
-          <button id="btn-prev" class="btn muted">← Précédent</button>
-          <div id="score-area" class="score-area">Score partie : 0 / 0</div>
-          <button id="btn-next" class="btn primary">Suivant →</button>
+          <button id="btn-prev" class="btn muted" onclick="goPrev()">← Précédent</button>
+          <div id="score-area" class="score-area">Score : 0 / 0</div>
+          <button id="btn-next" class="btn primary" onclick="goNext()">Suivant →</button>
         </div>
       </footer>
     </div>
@@ -90,4 +90,3 @@
   <script src="app.js"></script>
 </body>
 </html>
- 
