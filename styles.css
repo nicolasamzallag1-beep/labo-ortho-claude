@@ -17,34 +17,30 @@ body {
   position: fixed;
   inset: 0;
   z-index: -1;
-  background: 
-    radial-gradient(circle at 10% 20%, rgba(110, 231, 183, 0.05) 0%, transparent 40%),
-    radial-gradient(circle at 90% 80%, rgba(59, 130, 246, 0.08) 0%, transparent 40%),
-    var(--bg-dark);
+  background:
+    radial-gradient(circle at center, #0a1e3a 0%, #071426 80%);
   overflow: hidden;
 }
 
+/* Ajout d'une animation de petites particules lumineuses */
 .bg-animated::before {
   content: "";
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: 40px 40px;
-  mask-image: radial-gradient(ellipse at center, black, transparent 80%);
+  background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 30px 30px;
+  animation: moveDots 60s linear infinite;
+  opacity: 0.3;
+  pointer-events: none;
 }
 
-.bg-animated::after {
-  content: "";
-  position: absolute;
-  top: -50%; left: -50%;
-  width: 200%; height: 200%;
-  background: radial-gradient(circle at center, rgba(110, 231, 183, 0.03) 0%, transparent 20%);
-  animation: rotateBg 30s linear infinite;
-}
-
-@keyframes rotateBg {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+@keyframes moveDots {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 30px 30px;
+  }
 }
 
 .topbar {
